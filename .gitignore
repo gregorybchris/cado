@@ -1,0 +1,18 @@
+# Packaging
+*.egg-info
+build
+dist
+
+# Cache
+__pycache__
+*.pyc
+
+# Test Coverage
+.coverage*
+htmlcov
+
+# OS 
+.DS_Store
+
+# IDE
+.vscode
