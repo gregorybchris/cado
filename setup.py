@@ -26,7 +26,7 @@ setup(
     install_requires=requirements,
     extras_require={'testing': test_requirements},
     packages=find_packages(exclude=['tests']),
-    entry_points={"console_scripts": ["cado=cado.main:run"]},
+    entry_points={"console_scripts": ["cado=cado.cli.main:run"]},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

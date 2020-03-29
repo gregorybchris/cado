@@ -1,6 +1,0 @@
-class A:
-    def __init__(self, a):
-        self.a = a
-
-    def go(self):
-        print(f"Got a {self.a} right here")
