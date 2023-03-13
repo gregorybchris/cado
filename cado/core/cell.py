@@ -1,50 +1,54 @@
-class Cell:
-    def __init__(self, cell_id, contents, out_var):
-        self._cell_id = cell_id
-        self._contents = contents
-        self._out_var = out_var
-        self._dependents = []
-        self._dependencies = []
-        self._result = None
-        self._dirty = True
+import uuid
+from typing import Any, List, Optional
 
-    def get_id(self):
-        return self._cell_id
+from pydantic import BaseModel, Extra
 
-    def set_contents(self, contents):
-        self._contents = contents
-        self._dirty = True
 
-    def set_out_var(self, out_var):
-        # TODO: All depenents are now dirty
-        self._out_var = out_var
+def generate_id() -> str:
+    return uuid.uuid4().hex
 
-    def get_result(self):
-        return self._result
 
-    def get_out_var(self):
-        return self._out_var
+class Cell(BaseModel):
+    out_var: str
+    id: str = generate_id()
 
-    def add_dependent(self, cell):
-        self._dependents.append(cell)
+    parents: List["Cell"] = []
+    children: List["Cell"] = []
+    code: str = ""
+    result: Optional[Any] = None
+    expired = True
 
-    def add_dependency(self, cell):
-        self._dependencies.append(cell)
+    class Config:
+        extra = Extra.forbid
 
-    def is_dirty(self):
-        return self._dirty
+    def set_code(self, code: str) -> None:
+        self.code = code
+        self.expired = True
 
-    def run(self):
-        context = dict()
-        for dependency in self._dependencies:
-            if dependency.is_dirty():
-                dependency.run()
-            context[dependency.get_out_var()] = dependency.get_result()
+    def set_out_var(self, out_var: str) -> None:
+        for child in self.children:
+            child.expired = True
+        # TODO: Check if out_var is already taken by another cell in the notebook? Maybe just do this in notebook
+        self.out_var = out_var
+
+    def run(self) -> Any:
+        if self.code == "":
+            raise ValueError(f"Code is empty for cell \"{self.out_var}\" ({self.id})")
+        context = {}
+        for parent in self.parents:
+            if parent.expired:
+                parent.run()
+            context[parent.out_var] = parent.result
 
         defs = dict()
-        exec(self._contents, context, defs)
+        exec(self.code, context, defs)
 
-        if self._out_var is not None:
-            self._result = defs[self._out_var]
-        self._dirty = False
-        return self._result
+        if self.out_var not in defs:
+            raise ValueError(f"out_var was not found in exec locals for cell \"{self.out_var}\" ({self.id})")
+        self.result = defs[self.out_var]
+        self.expired = False
+
+        for child in self.children:
+            child.run()
+
+        return self.result

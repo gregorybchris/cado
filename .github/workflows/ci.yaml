@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Python ${{ matrix.python-version }} Setup
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        run: |
+          pip install poetry
+          if [ -d /poetryenvs ]; then rm -rf ~/poetryenvs; fi
+          poetry config virtualenvs.path ~/poetryenvs
+          poetry install -E stream
+      - name: Run flake8
+        run: |
+          poetry run pflake8 cado --config pyproject.toml
+          poetry run pflake8 tests --config pyproject.toml
+      - name: Run pylint
+        run: |
+          poetry run pylint cado --rcfile pyproject.toml
+      - name: Run mypy
+        run: |
+          poetry run mypy cado --config pyproject.toml
+      - name: Run pytest
+        run: |
+          poetry run pytest tests --cov=cado --cov-report=html --cov-report=xml --cov-branch
+      - name: Run pydocstyle
+        run: |
+          poetry run pydocstyle cado
+      - name: Upload HTML Coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: cado-coverage-html
+          path: cado/htmlcov
+
+      - name: Upload XML Coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: cado-coverage-xml
+          path: cado/coverage.xml
+
+      - name: Check Coverage
+        run: |
+          poetry run covcheck coverage.xml --config pyproject.toml
