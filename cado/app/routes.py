@@ -31,7 +31,7 @@ async def stream_api(socket: WebSocket) -> None:
         logger.info("Websocket disconnected")
 
 
-@router.get(path="/")
+@router.get(path="/status")
 def get_status() -> JSONResponse:
     """Endpoint for app status."""
     logger.info("GET app status")

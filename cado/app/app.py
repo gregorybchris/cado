@@ -13,7 +13,8 @@ app = FastAPI()
 
 app.include_router(routes.router)
 
-app.mount("/abc", StaticFiles(directory=Path(__file__).resolve().parent / "static", html=True), name="static")
+static_dirpath = Path(__file__).resolve().parent / "static"
+app.mount("/", StaticFiles(directory=static_dirpath, html=True), name="static")
 
 app.add_middleware(
     CORSMiddleware,
