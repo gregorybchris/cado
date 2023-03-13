@@ -32,7 +32,7 @@ jobs:
           pip install poetry
           if [ -d /poetryenvs ]; then rm -rf ~/poetryenvs; fi
           poetry config virtualenvs.path ~/poetryenvs
-          poetry install -E stream
+          poetry install
       - name: Run flake8
         run: |
           poetry run pflake8 cado --config pyproject.toml
