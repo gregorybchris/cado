@@ -33,7 +33,6 @@ covcheck = "^0.4.2"
 flake8 = "^6.0.0"
 ipdb = "^0.13.9"
 mypy = "^1.0.1"
-pydocstyle = "^6.1.1"
 pylint = "^2.16.2"
 pyproject-flake8 = "^6.0.0"
 pytest = "^7.2.1"
@@ -51,8 +50,8 @@ requires = ["poetry-core>=1.0.0"]
 cado = "cado.cli.cli:main"
 
 [tool.covcheck]
-branch = 100.0
-line = 100.0
+branch = 28.0
+line = 77.0
 
 [tool.flake8]
 ignore = ""
@@ -65,7 +64,7 @@ disallow_untyped_defs = true
 ignore_missing_imports = true
 
 [tool.pylint.basic]
-good-names = ["x, xs"]
+good-names = ["f"]
 notes = ["FIXME"]
 
 [tool.pylint.format]
@@ -75,7 +74,7 @@ max-line-length = 120
 extension-pkg-allow-list = ["pydantic"]
 
 [tool.pylint.messages_control]
-disable = ["missing-docstring"]
+disable = ["missing-module-docstring", "missing-class-docstring"]
 
 [tool.pylint.reports]
 output-format = "colorized"

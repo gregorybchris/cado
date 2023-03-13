@@ -4,7 +4,7 @@ import pytest
 from click.testing import CliRunner
 from pytest import MonkeyPatch
 
-from cado.cli.cli import up
+from cado.cli.cli import up_command
 from cado.app import app as app_module
 
 
@@ -20,6 +20,6 @@ class TestMain:
     @pytest.mark.skip("Not working")
     def test_up(self, mock_cado_app: Mock):
         runner = CliRunner()
-        result = runner.invoke(up, [])
+        result = runner.invoke(up_command, [])
         assert result.exit_code == 0
         assert result.output == "output-message"

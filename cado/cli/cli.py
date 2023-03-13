@@ -9,15 +9,16 @@ from cado.app.app import app as cado_app
 
 @click.group()
 def main() -> None:
-    pass
+    """Main CLI entrypoint."""
 
 
-@main.command()
+@main.command(name="up")
 @click.option("--host", type=str, default="0.0.0.0")
 @click.option("--port", "-p", type=int, default=8000)
 @click.option("--debug", is_flag=True)
 @click.option("--log-level", type=int, default=logging.INFO)
-def up(host: str, port: int, debug: bool, log_level: int) -> None:
+def up_command(host: str, port: int, debug: bool, log_level: int) -> None:
+    """Command to start up Cado app."""
     print("Welcome to Cado IDE")
     current_dirpath = Path(__file__).parent
     print(f"From {current_dirpath}")

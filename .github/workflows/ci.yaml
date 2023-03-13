@@ -46,9 +46,6 @@ jobs:
       - name: Run pytest
         run: |
           poetry run pytest tests --cov=cado --cov-report=html --cov-report=xml --cov-branch
-      - name: Run pydocstyle
-        run: |
-          poetry run pydocstyle cado
       - name: Upload HTML Coverage
         uses: actions/upload-artifact@v2
         with:

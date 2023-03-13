@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 @router.websocket(path="/stream")
 async def stream_api(socket: WebSocket) -> None:
+    """Websocket endpoint for streaming commands."""
     logger.info("Starting connection...")
 
     await socket.accept()
@@ -22,7 +23,7 @@ async def stream_api(socket: WebSocket) -> None:
             message_json = await socket.receive_json()
             message = Message.parse(message_json)
 
-            logger.info(f"Got message: {message}")
+            logger.info("Got message: %s", message)
 
             response = {"message": "hello"}
             await socket.send_json(response)
@@ -32,6 +33,7 @@ async def stream_api(socket: WebSocket) -> None:
 
 @router.get(path="/")
 def get_status() -> JSONResponse:
+    """Endpoint for app status."""
     logger.info("GET app status")
     return JSONResponse({
         'status': 'healthy',
