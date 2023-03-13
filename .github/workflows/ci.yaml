@@ -50,13 +50,13 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: cado-coverage-html
-          path: cado/htmlcov
+          path: htmlcov
 
       - name: Upload XML Coverage
         uses: actions/upload-artifact@v2
         with:
           name: cado-coverage-xml
-          path: cado/coverage.xml
+          path: coverage.xml
 
       - name: Check Coverage
         run: |
