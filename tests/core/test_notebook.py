@@ -11,4 +11,4 @@ class TestNotebook:
     def test_run_cell(self):
         notebook_filename = "notebook.cado"
         notebook = Notebook.from_filepath(Path(notebook_filename))
-        result = notebook.run_cell("cell_1")
+        notebook.run_cell("cell_1")
