@@ -5,11 +5,12 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from cado.core.cell import Cell
+from cado.core.notebook import Notebook
 
 
 class MessageType(Enum):
     # publish
-    GET_CELLS = "get-cells"
+    GET_NOTEBOOK = "get-notebook"
     UPDATE_CELL_CODE = "update-cell-code"
     UPDATE_CELL_OUTPUT_NAME = "update-cell-output-name"
     RUN_CELL = "run-cell"
@@ -18,7 +19,7 @@ class MessageType(Enum):
     DELETE_CELL = "delete-cell"
 
     # subscribe
-    GET_CELLS_RESPONSE = "get-cells-response"
+    GET_NOTEBOOK_RESPONSE = "get-notebook-response"
     UPDATE_CELL_RESPONSE = "update-cell-response"
     RUN_CELL_RESPONSE = "run-cell-response"
     NEW_CELL_RESPONSE = "new-cell-response"
@@ -40,8 +41,8 @@ class Message(BaseModel):
 # region: publish
 
 
-class GetCells(Message):
-    type = MessageType.GET_CELLS
+class GetNotebook(Message):
+    type = MessageType.GET_NOTEBOOK
 
 
 class UpdateCellCode(Message):
@@ -80,9 +81,9 @@ class DeleteCell(Message):
 # region: subscribe
 
 
-class GetCellsResponse(Message):
-    cells: List[Cell]
-    type = MessageType.GET_CELLS_RESPONSE
+class GetNotebookResponse(Message):
+    notebook: Notebook
+    type = MessageType.GET_NOTEBOOK_RESPONSE
 
 
 class UpdateCellResponse(Message):

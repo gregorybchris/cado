@@ -1,8 +1,8 @@
 import {
   ClearCellResponse,
   ErrorResponse,
-  GetCells,
-  GetCellsResponse,
+  GetNotebook,
+  GetNotebookResponse,
   Message,
   MessageType,
   NewCellResponse,
@@ -26,8 +26,8 @@ export default function Connection() {
   }
 
   function serverSync() {
-    sendMessage<GetCells>({
-      type: MessageType.GET_CELLS,
+    sendMessage<GetNotebook>({
+      type: MessageType.GET_NOTEBOOK,
     });
   }
 
@@ -40,9 +40,9 @@ export default function Connection() {
       const message = JSON.parse(lastJsonMessage as unknown as string) as Message;
       console.log("Got websocket message: ", message);
 
-      if (message.type == MessageType.GET_CELLS_RESPONSE) {
-        const response = message as GetCellsResponse;
-        setCells(response.cells);
+      if (message.type == MessageType.GET_NOTEBOOK_RESPONSE) {
+        const response = message as GetNotebookResponse;
+        setCells(response.notebook.cells);
       } else if (message.type == MessageType.RUN_CELL_RESPONSE) {
         const response = message as RunCellResponse;
         const updatedCell = response.cell;

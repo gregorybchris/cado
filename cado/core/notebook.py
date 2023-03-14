@@ -1,31 +1,42 @@
 import json
 from pathlib import Path
-from typing import Any, Dict
+from typing import List
+from uuid import UUID
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel
 
 from cado.core.cell import Cell
 
 
 class Notebook(BaseModel):
     filepath: Path
-    cells: Dict[str, Cell] = {}
+    cells: List[Cell] = []
 
-    # pylint: disable=too-few-public-methods
-    class Config:
-        extra = Extra.forbid
+    def get_cell(self, cell_id: UUID) -> Cell:
+        for cell in self.cells:
+            if cell.id == cell_id:
+                return cell
+        raise ValueError(f"No cell with ID {cell_id} found in notebook")
 
-    def run_cell(self, cell_id: str) -> None:
+    def add_cell(self, cell: Cell) -> None:
+        """Add a cell to the notebook.
+
+        Args:
+            cell (Cell): Cell to add to the notebook.
+        """
+        self.cells.append(cell)
+
+    def run_cell(self, cell_id: UUID) -> None:
         """Run a cell in the notebook.
 
         Args:
-            cell_id (str): ID of the cell to run.
+            cell_id (UUID): ID of the cell to run.
         """
-        if cell_id not in self.cells:
-            raise ValueError(f"Cell {cell_id} is not in this notebook")
-
-        cell = self.cells[cell_id]
-        cell.run()
+        for cell in self.cells:
+            if cell.id == cell_id:
+                cell.run()
+                return
+        raise ValueError(f"Cell {cell_id} is not in this notebook")
 
     @classmethod
     def from_filepath(cls, filepath: Path) -> "Notebook":
