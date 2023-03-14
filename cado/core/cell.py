@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 class CellStatus(Enum):
     OK = "ok"
-    DONE = "done"
+    EXPIRED = "expired"
     RUNNING = "running"
     ERROR = "error"
 
@@ -21,8 +21,7 @@ class Cell(BaseModel):
     code: str = ""
     result: Optional[Any] = None
     output: Optional[str] = None
-    status: CellStatus = CellStatus.OK
-    expired = True
+    status: CellStatus = CellStatus.EXPIRED
 
     def set_code(self, code: str) -> None:
         """Set the cell's code block.
@@ -30,11 +29,10 @@ class Cell(BaseModel):
         Args:
             code (str): Code the cell should contain.
         """
-        self.status = CellStatus.OK
+        self.status = CellStatus.EXPIRED
         self.result = None
         self.output = None
         self.code = code
-        self.expired = True
 
     def set_name(self, name: str) -> None:
         """Set the name of the cell.
@@ -42,11 +40,11 @@ class Cell(BaseModel):
         Args:
             name (str): The new name of the cell.
         """
-        self.status = CellStatus.OK
+        self.status = CellStatus.EXPIRED
         self.result = None
         self.output = None
         for child in self.children:
-            child.expired = True
+            child.status = CellStatus.EXPIRED
         # TODO: Check if name is already taken by another cell in the notebook? Maybe just do this in notebook
         self.name = name
 
@@ -64,7 +62,7 @@ class Cell(BaseModel):
             raise ValueError(f"Code is empty for cell {self.id} (name=\"{self.name}\")")
         context = {}
         for parent in self.parents:
-            if parent.expired:
+            if parent.status == CellStatus.EXPIRED:
                 parent.run()
             context[parent.name] = parent.result
 
@@ -78,7 +76,7 @@ class Cell(BaseModel):
             self.status = CellStatus.ERROR
             raise ValueError(f"Cell name \"{self.name}\" was not found in exec locals for cell ({self.id})")
         self.result = defs[self.name]
-        self.expired = False
+        self.status = CellStatus.OK
 
         for child in self.children:
             child.run()

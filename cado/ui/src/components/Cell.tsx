@@ -76,8 +76,14 @@ export default function Cell(props: CellProps) {
               {props.cell.name} = {props.cell.result}
             </div>
           )}
+        </div>
 
-          {props.cell.status == CellStatus.ERROR && <div className="inline-block px-10 text-red-500">Error</div>}
+        <div className="bg-dark-rock px-8 pt-5">
+          {/* {props.cell.status == CellStatus.ERROR && <div className="inline-block px-10 text-red-500">Error</div>} */}
+          {props.cell.status === CellStatus.ERROR && (
+            <div className="inline-block text-red-500">Status: {props.cell.status}</div>
+          )}
+          {props.cell.status !== CellStatus.ERROR && <div className="inline-block">Status: {props.cell.status}</div>}
         </div>
       </div>
     </div>
