@@ -6,8 +6,9 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from cado.app.example import load_example_notebook
 
-from cado.app.message import (ClearCellResponse, ErrorResponse, GetNotebook, GetNotebookResponse, MessageType, NewCell,
-                              NewCellResponse, RunCell, UpdateCellCode, UpdateCellOutputName, UpdateCellResponse)
+from cado.app.message import (ClearCellResponse, DeleteCell, ErrorResponse, GetNotebook, GetNotebookResponse,
+                              MessageType, NewCell, NewCellResponse, RunCell, UpdateCellCode, UpdateCellOutputName,
+                              UpdateCellResponse)
 from cado.core.cell import Cell
 from cado.core.cell_status import CellStatus
 from cado.core.notebook import Notebook
@@ -76,6 +77,11 @@ async def stream_api(socket: WebSocket) -> None:
                     logger.info("New cell created: %s", new_cell)
                     notebook.add_cell(new_cell)
                     response = NewCellResponse(cell=new_cell)
+                    await socket.send_json(response.json())
+                elif message_type == MessageType.DELETE_CELL:
+                    message = DeleteCell.parse_obj(message_json)
+                    notebook.delete_cell(message.cell_id)
+                    response = GetNotebookResponse(notebook=notebook)
                     await socket.send_json(response.json())
                 else:
                     logger.error("Request type did not match any known message types")

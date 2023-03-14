@@ -32,6 +32,9 @@ class Notebook(BaseModel):
                 return cell
         raise ValueError(f"No cell with ID {cell_id} found in notebook")
 
+    def delete_cell(self, cell_id: UUID) -> None:
+        self.cells = [c for c in self.cells if c.id != cell_id]
+
     def add_cell(self, cell: Cell) -> None:
         """Add a cell to the notebook.
 

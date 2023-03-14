@@ -1,7 +1,15 @@
-import { ArrowRight, CheckCircle, Circle, Eraser, Play, Spinner, WarningCircle } from "@phosphor-icons/react";
-import { ClearCell, Message, MessageType, RunCell, UpdateCellCode, UpdateCellOutputName } from "../lib/models/message";
+import { ArrowRight, CheckCircle, Circle, Eraser, Play, Spinner, Trash, WarningCircle } from "@phosphor-icons/react";
+import {
+  ClearCell,
+  DeleteCell,
+  MessageType,
+  RunCell,
+  UpdateCellCode,
+  UpdateCellOutputName,
+} from "../lib/models/message";
 import { useEffect, useState } from "react";
 
+import Button from "../widgets/Button";
 import CellModel from "../lib/models/cell";
 import { CellStatus } from "../lib/models/cellStatus";
 import CodeEditor from "@uiw/react-textarea-code-editor";
@@ -48,23 +56,20 @@ export default function Cell(props: CellProps) {
     });
   }
 
+  function deleteCell() {
+    props.sendMessage<DeleteCell>({
+      cell_id: props.cell.id,
+      type: MessageType.DELETE_CELL,
+    });
+  }
+
   return (
     <div>
       <div className="mx-5 mb-5 bg-dark-rock py-3">
         <div className="flex items-center px-8">
-          <div
-            className="mr-5 cursor-pointer rounded-md bg-rock py-2 px-4 duration-150 hover:bg-light-rock hover:ease-linear"
-            onClick={() => runCell()}
-          >
-            <Play weight="bold" />
-          </div>
-
-          <div
-            className="mr-5 cursor-pointer rounded-md bg-rock py-2 px-4 duration-150 hover:bg-light-rock hover:ease-linear"
-            onClick={() => clearCell()}
-          >
-            <Eraser weight="bold" />
-          </div>
+          <Button onClick={runCell} tooltip="Run" iconClass={Play} />
+          <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
+          <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
 
           <div className="flex items-center">
             {props.cell.status === CellStatus.ERROR && (
