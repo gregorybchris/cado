@@ -23,4 +23,14 @@ def up_command(host: str, port: int, debug: bool, log_level: int) -> None:
     current_dirpath = Path(__file__).parent
     print(f"From {current_dirpath}")
     print("Starting app")
-    uvicorn.run(cado_app, host=host, port=port, debug=debug, log_level=log_level)
+
+    package_dirpath = current_dirpath.parent.parent
+    log_config_filepath = package_dirpath / "logging.yaml"
+    uvicorn.run(
+        cado_app,
+        host=host,
+        port=port,
+        debug=debug,
+        log_level=log_level,
+        log_config=str(log_config_filepath),
+    )

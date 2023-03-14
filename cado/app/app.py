@@ -5,15 +5,13 @@ from fastapi.staticfiles import StaticFiles
 
 from cado.app import routes
 
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+ALLOWED_ORIGINS = []
 
 app = FastAPI()
 
 app.include_router(routes.router)
 
-static_dirpath = Path(__file__).resolve().parent / "static"
+static_dirpath = Path(__file__).resolve().parent.parent / "ui" / "dist"
 app.mount("/", StaticFiles(directory=static_dirpath, html=True), name="static")
 
 app.add_middleware(

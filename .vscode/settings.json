@@ -1,8 +1,23 @@
 {
+  "[html]": { "editor.formatOnSave": true, "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.formatOnSave": true, "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.formatOnSave": true, "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.formatOnSave": true, "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.formatOnSave": true, "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
   "prettier.printWidth": 120,
+  "editor.detectIndentation": true,
   "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.rulers": [120],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.lintTask.enable": true,
+  "eslint.packageManager": "yarn",
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "python.testing.pytestEnabled": true,
   "python.formatting.provider": "yapf",
   "python.formatting.yapfPath": "yapf",
   "python.formatting.yapfArgs": ["--style", "{based_on_style: pep8, indent_width: 4, column_limit: 120}"],
@@ -12,5 +27,4 @@
   "python.linting.pylintEnabled": true,
   "python.linting.pylintPath": "pylint",
   "python.linting.pylintArgs": ["--rcfile=../pyproject.toml"],
-  "python.testing.pytestEnabled": true
 }
