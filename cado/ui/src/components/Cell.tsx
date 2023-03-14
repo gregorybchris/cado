@@ -1,5 +1,6 @@
 import { ArrowRight, CheckCircle, Circle, Eraser, Play, Spinner, WarningCircle } from "@phosphor-icons/react";
 import { ClearCell, Message, MessageType, RunCell, UpdateCellCode, UpdateCellOutputName } from "../lib/models/message";
+import { useEffect, useState } from "react";
 
 import CellModel from "../lib/models/cell";
 import { CellStatus } from "../lib/models/cellStatus";
@@ -11,10 +12,16 @@ interface CellProps {
 }
 
 export default function Cell(props: CellProps) {
-  function updateCellOutputName(output_name: string) {
+  const [outputName, setOutputName] = useState("");
+
+  useEffect(() => {
+    setOutputName(props.cell.output_name);
+  }, [props.cell.output_name]);
+
+  function updateCellOutputName() {
     props.sendMessage<UpdateCellOutputName>({
       cell_id: props.cell.id,
-      output_name: output_name,
+      output_name: outputName,
       type: MessageType.UPDATE_CELL_OUTPUT_NAME,
     });
   }
@@ -43,7 +50,7 @@ export default function Cell(props: CellProps) {
 
   return (
     <div>
-      <div className="mb-5 bg-dark-rock py-3">
+      <div className="mx-5 mb-5 bg-dark-rock py-3">
         <div className="flex items-center px-8">
           <div
             className="mr-5 cursor-pointer rounded-md bg-rock py-2 px-4 duration-150 hover:bg-light-rock hover:ease-linear"
@@ -88,16 +95,17 @@ export default function Cell(props: CellProps) {
           <input
             className="inline-block w-24 rounded-md bg-rock py-2 px-4 outline-none duration-150 focus:bg-light-rock active:ease-linear"
             type="text"
-            value={props.cell.output_name}
+            value={outputName}
             placeholder="Output"
-            onChange={(event) => updateCellOutputName(event.target.value)}
+            onBlur={updateCellOutputName}
+            onChange={(event) => setOutputName(event.target.value)}
           ></input>
 
           {props.cell.output && (
             <div className="inline-block">
               <div className="flex items-center">
                 <ArrowRight weight="bold" className="mx-2" />
-                <div>{props.cell.output}</div>
+                <div>{JSON.stringify(props.cell.output)}</div>
               </div>
             </div>
           )}

@@ -8,7 +8,7 @@ interface NotebookProps {
 
 export default function Notebook(props: NotebookProps) {
   return (
-    <div>
+    <div className="bg-rock pb-5">
       {props.cells.map((cell, i) => (
         <Cell key={i} sendMessage={props.sendMessage} cell={cell} />
       ))}

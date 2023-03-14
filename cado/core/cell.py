@@ -1,16 +1,10 @@
 import traceback
-from enum import Enum
 from typing import Any, List, Mapping, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-
-class CellStatus(Enum):
-    OK = "ok"
-    EXPIRED = "expired"
-    RUNNING = "running"
-    ERROR = "error"
+from cado.core.cell_status import CellStatus
 
 
 class Cell(BaseModel):
@@ -24,7 +18,15 @@ class Cell(BaseModel):
     parents: List["Cell"] = []
     children: List["Cell"] = []
     printed: Optional[str] = None
-    status: CellStatus = CellStatus.EXPIRED
+    status: CellStatus = CellStatus.ERROR
+
+    def set_status(self, status: CellStatus) -> None:
+        """Set the cell's status.
+
+        Args:
+            status (CellStatus): New cell status.
+        """
+        self.status = status
 
     def set_code(self, code: str) -> None:
         """Set the cell's code block.
@@ -43,6 +45,9 @@ class Cell(BaseModel):
         Args:
             output_name (str): The new output_name of the cell.
         """
+        if self.output_name == output_name:
+            return
+
         self.output_name = output_name
         self.output = None
         self.printed = None
@@ -98,4 +103,3 @@ class Cell(BaseModel):
     def clear(self) -> None:
         self.output = None
         self.printed = None
-        self.status = CellStatus.EXPIRED

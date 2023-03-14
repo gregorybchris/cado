@@ -22,6 +22,7 @@ export default function Connection() {
   const [cells, setCells] = useState<CellModel[]>([]);
 
   function sendMessage<M>(message: M) {
+    console.log("Sending message: ", message);
     sendJsonMessage(message as JsonObject);
   }
 

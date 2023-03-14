@@ -51,3 +51,5 @@ dmypy.json
 
 # System
 .DS_Store
+
+*.cado

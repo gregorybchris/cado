@@ -6,11 +6,24 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from cado.core.cell import Cell
+from cado.core.cell_status import CellStatus
 
 
 class Notebook(BaseModel):
-    filepath: Path
     cells: List[Cell] = []
+
+    def update_cell_output_name(self, cell_id: UUID, output_name: str) -> None:
+        output_names = set()
+        for cell in self.cells:
+            if cell.id != cell_id:
+                output_names.add(cell.output_name)
+        for cell in self.cells:
+            if cell.id == cell_id:
+                if output_name in output_names and output_name != "":
+                    cell.clear()
+                    cell.set_status(CellStatus.ERROR)
+                    raise ValueError(f"Cell with output name {cell.output_name} already exists in the notebook")
+                cell.set_output_name(output_name)
 
     def get_cell(self, cell_id: UUID) -> Cell:
         for cell in self.cells:
@@ -24,6 +37,9 @@ class Notebook(BaseModel):
         Args:
             cell (Cell): Cell to add to the notebook.
         """
+        for c in self.cells:
+            if cell.output_name == c.output_name != "":
+                raise ValueError(f"Cell with output name {cell.output_name} already exists in the notebook")
         self.cells.append(cell)
 
     def run_cell(self, cell_id: UUID) -> None:
@@ -51,5 +67,17 @@ class Notebook(BaseModel):
         with filepath.open() as f:
             notebook_json = json.load(f)
             return cls.parse_obj(notebook_json)
+
+        # TODO: Check that the graph is acyclic
+
+    def to_filepath(self, filepath: Path) -> None:
+        """Save a notebook to a .cado notebook file.
+
+        Args:
+            filepath (Path): Filepath to a .cado notebook file.
+        """
+        with filepath.open("w") as f:
+            notebook_json = self.json()
+            f.write(notebook_json)
 
         # TODO: Check that the graph is acyclic
