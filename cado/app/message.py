@@ -11,7 +11,7 @@ class MessageType(Enum):
     # publish
     GET_CELLS = "get-cells"
     UPDATE_CELL_CODE = "update-cell-code"
-    UPDATE_CELL_NAME = "update-cell-name"
+    UPDATE_CELL_OUTPUT_NAME = "update-cell-output-name"
     RUN_CELL = "run-cell"
     CLEAR_CELL = "clear-cell"
     NEW_CELL = "new-cell"
@@ -22,6 +22,7 @@ class MessageType(Enum):
     UPDATE_CELL_RESPONSE = "update-cell-response"
     RUN_CELL_RESPONSE = "run-cell-response"
     NEW_CELL_RESPONSE = "new-cell-response"
+    CLEAR_CELL_RESPONSE = "clear-cell-response"
     ERROR_RESPONSE = "error-response"
 
     @classmethod
@@ -49,10 +50,10 @@ class UpdateCellCode(Message):
     type = MessageType.UPDATE_CELL_CODE
 
 
-class UpdateCellName(Message):
+class UpdateCellOutputName(Message):
     cell_id: UUID
-    name: str
-    type = MessageType.UPDATE_CELL_NAME
+    output_name: str
+    type = MessageType.UPDATE_CELL_OUTPUT_NAME
 
 
 class RunCell(Message):
@@ -97,6 +98,11 @@ class RunCellResponse(Message):
 class NewCellResponse(Message):
     cell: Cell
     type = MessageType.NEW_CELL_RESPONSE
+
+
+class ClearCellResponse(Message):
+    cell: Cell
+    type = MessageType.CLEAR_CELL_RESPONSE
 
 
 class ErrorResponse(Message):

@@ -1,5 +1,5 @@
 import { ArrowRight, CheckCircle, Circle, Eraser, Play, Spinner, WarningCircle } from "@phosphor-icons/react";
-import { ClearCell, Message, MessageType, RunCell, UpdateCellCode, UpdateCellName } from "../lib/models/message";
+import { ClearCell, Message, MessageType, RunCell, UpdateCellCode, UpdateCellOutputName } from "../lib/models/message";
 
 import CellModel from "../lib/models/cell";
 import { CellStatus } from "../lib/models/cellStatus";
@@ -11,11 +11,11 @@ interface CellProps {
 }
 
 export default function Cell(props: CellProps) {
-  function updateCellName(name: string) {
-    props.sendMessage<UpdateCellName>({
+  function updateCellOutputName(output_name: string) {
+    props.sendMessage<UpdateCellOutputName>({
       cell_id: props.cell.id,
-      name: name,
-      type: MessageType.UPDATE_CELL_NAME,
+      output_name: output_name,
+      type: MessageType.UPDATE_CELL_OUTPUT_NAME,
     });
   }
 
@@ -86,18 +86,18 @@ export default function Cell(props: CellProps) {
 
         <div className="mt-3 flex items-center px-8">
           <input
-            className="inline-block w-20 rounded-md bg-rock py-2 px-4 outline-none duration-150 focus:bg-light-rock active:ease-linear"
+            className="inline-block w-24 rounded-md bg-rock py-2 px-4 outline-none duration-150 focus:bg-light-rock active:ease-linear"
             type="text"
-            value={props.cell.name}
-            placeholder="Cell name"
-            onChange={(event) => updateCellName(event.target.value)}
+            value={props.cell.output_name}
+            placeholder="Output"
+            onChange={(event) => updateCellOutputName(event.target.value)}
           ></input>
 
-          {props.cell.result && (
+          {props.cell.output && (
             <div className="inline-block">
               <div className="flex items-center">
                 <ArrowRight weight="bold" className="mx-2" />
-                <div>{props.cell.result}</div>
+                <div>{props.cell.output}</div>
               </div>
             </div>
           )}

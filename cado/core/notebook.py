@@ -15,20 +15,17 @@ class Notebook(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    def run_cell(self, cell_id: str) -> Any:
+    def run_cell(self, cell_id: str) -> None:
         """Run a cell in the notebook.
 
         Args:
             cell_id (str): ID of the cell to run.
-
-        Returns:
-            Any: The result of running the cell.
         """
         if cell_id not in self.cells:
             raise ValueError(f"Cell {cell_id} is not in this notebook")
 
         cell = self.cells[cell_id]
-        return cell.run()
+        cell.run()
 
     @classmethod
     def from_filepath(cls, filepath: Path) -> "Notebook":

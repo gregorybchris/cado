@@ -1,4 +1,5 @@
 import {
+  ClearCellResponse,
   ErrorResponse,
   GetCells,
   GetCellsResponse,
@@ -58,6 +59,10 @@ export default function Connection() {
         const response = message as NewCellResponse;
         const newCell = response.cell;
         setCells([...cells, newCell]);
+      } else if (message.type == MessageType.CLEAR_CELL_RESPONSE) {
+        const response = message as ClearCellResponse;
+        const updatedCell = response.cell;
+        setCells(cells.map((c) => (c.id == updatedCell.id ? updatedCell : c)));
       } else {
         console.error("Response type did not match any known message types", message.type);
       }
