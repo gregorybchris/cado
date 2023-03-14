@@ -15,6 +15,6 @@ def load_example_notebook() -> Notebook:
                     "        a -= 1")
     example_cell = Cell(output_name="a", code=EXAMPLE_CODE)
     example_cell.set_status(CellStatus.EXPIRED)
-    notebook = Notebook(filepath="")
+    notebook = Notebook(name="example.cado", filepath="")
     notebook.add_cell(example_cell)
     return notebook

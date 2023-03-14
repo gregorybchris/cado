@@ -10,6 +10,7 @@ from cado.core.cell_status import CellStatus
 
 
 class Notebook(BaseModel):
+    name: str
     cells: List[Cell] = []
 
     def update_cell_output_name(self, cell_id: UUID, output_name: str) -> None:

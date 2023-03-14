@@ -7,8 +7,7 @@ from fastapi.responses import JSONResponse
 from cado.app.example import load_example_notebook
 
 from cado.app.message import (ClearCellResponse, ErrorResponse, GetNotebook, GetNotebookResponse, MessageType, NewCell,
-                              NewCellResponse, RunCell, RunCellResponse, UpdateCellCode, UpdateCellOutputName,
-                              UpdateCellResponse)
+                              NewCellResponse, RunCell, UpdateCellCode, UpdateCellOutputName, UpdateCellResponse)
 from cado.core.cell import Cell
 from cado.core.cell_status import CellStatus
 from cado.core.notebook import Notebook
@@ -62,7 +61,7 @@ async def stream_api(socket: WebSocket) -> None:
                     message = RunCell.parse_obj(message_json)
                     cell = notebook.get_cell(message.cell_id)
                     cell.run()
-                    response = RunCellResponse(cell=cell)
+                    response = UpdateCellResponse(cell=cell)
                     await socket.send_json(response.json())
                 elif message_type == MessageType.CLEAR_CELL:
                     message = RunCell.parse_obj(message_json)

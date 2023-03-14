@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -21,7 +20,6 @@ class MessageType(Enum):
     # subscribe
     GET_NOTEBOOK_RESPONSE = "get-notebook-response"
     UPDATE_CELL_RESPONSE = "update-cell-response"
-    RUN_CELL_RESPONSE = "run-cell-response"
     NEW_CELL_RESPONSE = "new-cell-response"
     CLEAR_CELL_RESPONSE = "clear-cell-response"
     ERROR_RESPONSE = "error-response"
@@ -89,11 +87,6 @@ class GetNotebookResponse(Message):
 class UpdateCellResponse(Message):
     cell: Cell
     type = MessageType.UPDATE_CELL_RESPONSE
-
-
-class RunCellResponse(Message):
-    cell: Cell
-    type = MessageType.RUN_CELL_RESPONSE
 
 
 class NewCellResponse(Message):
