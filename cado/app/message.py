@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import List
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -12,6 +13,7 @@ class MessageType(Enum):
     UPDATE_CELL_CODE = "update-cell-code"
     UPDATE_CELL_NAME = "update-cell-name"
     RUN_CELL = "run-cell"
+    CLEAR_CELL = "clear-cell"
     NEW_CELL = "new-cell"
     DELETE_CELL = "delete-cell"
 
@@ -42,20 +44,25 @@ class GetCells(Message):
 
 
 class UpdateCellCode(Message):
-    cell_id: str
+    cell_id: UUID
     code: str
     type = MessageType.UPDATE_CELL_CODE
 
 
 class UpdateCellName(Message):
-    cell_id: str
+    cell_id: UUID
     name: str
     type = MessageType.UPDATE_CELL_NAME
 
 
 class RunCell(Message):
-    cell_id: str
+    cell_id: UUID
     type = MessageType.RUN_CELL
+
+
+class ClearCell(Message):
+    cell_id: UUID
+    type = MessageType.CLEAR_CELL
 
 
 class NewCell(Message):
@@ -63,7 +70,7 @@ class NewCell(Message):
 
 
 class DeleteCell(Message):
-    cell_id: str
+    cell_id: UUID
     type = MessageType.DELETE_CELL
 
 
@@ -88,7 +95,7 @@ class RunCellResponse(Message):
 
 
 class NewCellResponse(Message):
-    cell_id: str
+    cell: Cell
     type = MessageType.NEW_CELL_RESPONSE
 
 

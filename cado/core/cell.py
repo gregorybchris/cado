@@ -1,8 +1,9 @@
-import uuid
+import traceback
 from enum import Enum
 from typing import Any, List, Mapping, Optional
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CellStatus(Enum):
@@ -14,7 +15,7 @@ class CellStatus(Enum):
 
 class Cell(BaseModel):
     name: str
-    id: str = uuid.uuid4().hex
+    id: UUID = Field(default_factory=uuid4)
 
     parents: List["Cell"] = []
     children: List["Cell"] = []
@@ -40,6 +41,13 @@ class Cell(BaseModel):
         Args:
             name (str): The new name of the cell.
         """
+        if name == "":
+            self.name = name
+            self.status = CellStatus.ERROR
+            self.result = None
+            self.output = None
+            raise ValueError(f"Cell name for cell ({self.id}) is empty")
+
         self.status = CellStatus.EXPIRED
         self.result = None
         self.output = None
@@ -67,8 +75,14 @@ class Cell(BaseModel):
             context[parent.name] = parent.result
 
         defs: Mapping[str, object] = {}
-        # pylint: disable=exec-used
-        exec(self.code, context, defs)
+        try:
+            # pylint: disable=exec-used
+            exec(self.code, context, defs)
+        except Exception:
+            self.result = None
+            self.output = None
+            self.status = CellStatus.ERROR
+            raise ValueError(f"Failed to exec: {traceback.format_exc()}")
 
         if self.name not in defs:
             self.result = None
@@ -80,3 +94,8 @@ class Cell(BaseModel):
 
         for child in self.children:
             child.run()
+
+    def clear(self) -> None:
+        self.result = None
+        self.output = None
+        self.status = CellStatus.EXPIRED

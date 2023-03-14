@@ -4,13 +4,13 @@ import traceback
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
-from cado.app.message import (ErrorResponse, GetCells, GetCellsResponse, MessageType, RunCell, RunCellResponse,
-                              UpdateCellCode, UpdateCellName, UpdateCellResponse)
+from cado.app.message import (ErrorResponse, GetCells, GetCellsResponse, MessageType, NewCell, NewCellResponse, RunCell,
+                              RunCellResponse, UpdateCellCode, UpdateCellName, UpdateCellResponse)
 from cado.core.cell import Cell
 
-router = APIRouter()
-
 logger = logging.getLogger(__name__)
+
+router = APIRouter()
 
 
 @router.websocket(path="/stream")
@@ -21,9 +21,13 @@ async def stream_api(socket: WebSocket) -> None:
     await socket.accept()
     logger.info("Connection open")
 
-    INITIAL_CODE = "def add_one(a):\n    return a + 1\n\na = 5 + add_one(4)\n\nfor i in range(5):\n    a += 2"
+    # TODO: Use Notebook class as storage for cells
+    # TODO: Load notebook from file
+    EXAMPLE_CODE = "def add_one(a):\n    return a + 1\n\na = 5 + add_one(4)\n\nfor i in range(5):\n    a += 2"
+    example_cell = Cell(name="a", code=EXAMPLE_CODE)
+    logger.info("Example cell created: %s", example_cell)
     cells = {
-        "1234": Cell(name="a", id="1234", code=INITIAL_CODE),
+        example_cell.id: example_cell,
     }
 
     try:
@@ -55,6 +59,19 @@ async def stream_api(socket: WebSocket) -> None:
                     cell.run()
                     response = RunCellResponse(cell=cell)
                     await socket.send_json(response.json())
+                elif message_type == MessageType.CLEAR_CELL:
+                    message = RunCell.parse_obj(message_json)
+                    cell = cells[message.cell_id]
+                    cell.clear()
+                    response = RunCellResponse(cell=cell)
+                    await socket.send_json(response.json())
+                elif message_type == MessageType.NEW_CELL:
+                    message = NewCell.parse_obj(message_json)
+                    new_cell = Cell(name="a")
+                    logger.info("New cell created: %s", new_cell)
+                    cells[new_cell.id] = new_cell
+                    response = NewCellResponse(cell=new_cell)
+                    await socket.send_json(response.json())
                 else:
                     logger.error("Request type did not match any known message types")
             except Exception as exc:
@@ -64,6 +81,7 @@ async def stream_api(socket: WebSocket) -> None:
                 await socket.send_json(response.json())
     except WebSocketDisconnect:
         logger.info("Websocket disconnected")
+        # TODO: Save to file
 
 
 @router.get(path="/status")
