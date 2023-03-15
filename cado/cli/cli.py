@@ -18,8 +18,8 @@ def main() -> None:
 @click.option("--debug", is_flag=True)
 @click.option("--log-level", type=int, default=logging.INFO)
 def up_command(host: str, port: int, debug: bool, log_level: int) -> None:
-    """Command to start up Cado app."""
-    print("Welcome to Cado IDE")
+    """Command to start up cado app."""
+    print("Welcome to cado IDE")
     current_dirpath = Path(__file__).parent
     print(f"From {current_dirpath}")
     print("Starting app")

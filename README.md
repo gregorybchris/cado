@@ -1,6 +1,6 @@
 <div align="center">
   <img src="assets/cado-banner.png">
-  <h1>Cado</h1>
+  <h1>cado</h1>
 
   <p>
     <strong>Python notebook IDE with a focus on reactivity</strong>
@@ -28,6 +28,6 @@ pip install cado
 ## Usage
 
 ```bash
-# Start up a Cado server
+# Start up a cado server
 cado up
 ```

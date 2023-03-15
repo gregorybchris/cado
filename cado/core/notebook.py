@@ -157,7 +157,7 @@ class Notebook(BaseModel):
             filepath (Path): Filepath to a .cado notebook file.
 
         Returns:
-            Notebook: Loaded Cado notebook.
+            Notebook: Loaded cado notebook.
         """
         with filepath.open() as f:
             notebook_json = json.load(f)

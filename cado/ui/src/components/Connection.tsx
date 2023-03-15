@@ -76,7 +76,7 @@ export default function Connection() {
     <div>
       <Toolbar sendMessage={send} />
       {readyState === ReadyState.OPEN && notebook && <Notebook notebook={notebook} sendMessage={send} />}
-      {readyState !== ReadyState.OPEN && <div className="px-8">Disconnected from the Cado sever</div>}
+      {readyState !== ReadyState.OPEN && <div className="px-8">Disconnected from the cado sever</div>}
     </div>
   );
 }
