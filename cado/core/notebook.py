@@ -11,10 +11,12 @@ from cado.core.cell_status import CellStatus
 
 logger = logging.getLogger(__name__)
 
+CURRENT_VERSION = "0.1"
+
 
 class Notebook(BaseModel):
     name: str
-    version: str = "0.1"
+    version: str = CURRENT_VERSION
     cells: List[Cell] = []
 
     def update_cell_output_name(self, cell_id: UUID, output_name: str) -> None:
@@ -162,9 +164,10 @@ class Notebook(BaseModel):
         """
         with filepath.open() as f:
             notebook_json = json.load(f)
+            version = notebook_json["version"]
+            if version != CURRENT_VERSION:
+                raise ValueError(f"Cannot load notebook with version {version}")
             return cls.parse_obj(notebook_json)
-
-        # TODO: Check that the graph is acyclic
 
     def to_filepath(self, filepath: Path) -> None:
         """Save a notebook to a .cado notebook file.
