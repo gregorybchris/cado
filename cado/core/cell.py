@@ -62,6 +62,14 @@ class Cell(BaseModel):
             child.status = CellStatus.EXPIRED
         # TODO: Check if name is already taken by another cell in the notebook? Maybe just do this in notebook
 
+    def set_input_names(self, input_names: List[str]) -> None:
+        """Set the input names of the cell.
+
+        Args:
+            input_names (List[str]): The new input_names of the cell.
+        """
+        self.input_names = input_names
+
     def run(self) -> None:
         """Run the cell.
 

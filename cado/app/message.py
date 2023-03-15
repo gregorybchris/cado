@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -12,6 +13,7 @@ class MessageType(Enum):
     GET_NOTEBOOK = "get-notebook"
     UPDATE_CELL_CODE = "update-cell-code"
     UPDATE_CELL_OUTPUT_NAME = "update-cell-output-name"
+    UPDATE_CELL_INPUT_NAMES = "update-cell-input-names"
     RUN_CELL = "run-cell"
     CLEAR_CELL = "clear-cell"
     NEW_CELL = "new-cell"
@@ -19,9 +21,7 @@ class MessageType(Enum):
 
     # subscribe
     GET_NOTEBOOK_RESPONSE = "get-notebook-response"
-    UPDATE_CELL_RESPONSE = "update-cell-response"
-    NEW_CELL_RESPONSE = "new-cell-response"
-    CLEAR_CELL_RESPONSE = "clear-cell-response"
+    GET_CELL_RESPONSE = "get-cell-response"
     ERROR_RESPONSE = "error-response"
 
     @classmethod
@@ -55,6 +55,12 @@ class UpdateCellOutputName(Message):
     type = MessageType.UPDATE_CELL_OUTPUT_NAME
 
 
+class UpdateCellInputNames(Message):
+    cell_id: UUID
+    input_names: List[str]
+    type = MessageType.UPDATE_CELL_INPUT_NAMES
+
+
 class RunCell(Message):
     cell_id: UUID
     type = MessageType.RUN_CELL
@@ -84,19 +90,9 @@ class GetNotebookResponse(Message):
     type = MessageType.GET_NOTEBOOK_RESPONSE
 
 
-class UpdateCellResponse(Message):
+class GetCellResponse(Message):
     cell: Cell
-    type = MessageType.UPDATE_CELL_RESPONSE
-
-
-class NewCellResponse(Message):
-    cell: Cell
-    type = MessageType.NEW_CELL_RESPONSE
-
-
-class ClearCellResponse(Message):
-    cell: Cell
-    type = MessageType.CLEAR_CELL_RESPONSE
+    type = MessageType.GET_CELL_RESPONSE
 
 
 class ErrorResponse(Message):

@@ -18,6 +18,7 @@ class Notebook(BaseModel):
         for cell in self.cells:
             if cell.id != cell_id:
                 output_names.add(cell.output_name)
+
         for cell in self.cells:
             if cell.id == cell_id:
                 if output_name in output_names and output_name != "":
@@ -26,6 +27,20 @@ class Notebook(BaseModel):
                     cell.set_output_name("")
                     raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
                 cell.set_output_name(output_name)
+
+    def update_cell_input_names(self, cell_id: UUID, input_names: str) -> None:
+        output_names = set()
+        for cell in self.cells:
+            if cell.id != cell_id:
+                output_names.add(cell.output_name)
+
+        for cell in self.cells:
+            if cell.id == cell_id:
+                valid_input_names = []
+                for input_name in input_names:
+                    if input_name in output_names:
+                        valid_input_names.append(input_name)
+                cell.set_input_names(valid_input_names)
 
     def get_cell(self, cell_id: UUID) -> Cell:
         for cell in self.cells:

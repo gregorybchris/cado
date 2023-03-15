@@ -1,12 +1,10 @@
 import {
-  ClearCellResponse,
   ErrorResponse,
+  GetCellResponse,
   GetNotebook,
   GetNotebookResponse,
   Message,
   MessageType,
-  NewCellResponse,
-  UpdateCellResponse,
 } from "../lib/models/message";
 import { None, Optional } from "../lib/types";
 import NotebookModel, { addNotebookCell, updateNotebookCell } from "../lib/models/notebook";
@@ -61,22 +59,8 @@ export default function Connection() {
         const response = message as ErrorResponse;
         console.error(response);
         loadNotebook();
-      } else if (message.type == MessageType.UPDATE_CELL_RESPONSE) {
-        const response = message as UpdateCellResponse;
-        if (!notebook) {
-          console.error("No notebook found");
-          return;
-        }
-        setNotebook(updateNotebookCell(notebook, response.cell));
-      } else if (message.type == MessageType.NEW_CELL_RESPONSE) {
-        const response = message as NewCellResponse;
-        if (!notebook) {
-          console.error("No notebook found");
-          return;
-        }
-        setNotebook(addNotebookCell(notebook, response.cell));
-      } else if (message.type == MessageType.CLEAR_CELL_RESPONSE) {
-        const response = message as ClearCellResponse;
+      } else if (message.type == MessageType.GET_CELL_RESPONSE) {
+        const response = message as GetCellResponse;
         if (!notebook) {
           console.error("No notebook found");
           return;
