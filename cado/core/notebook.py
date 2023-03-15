@@ -23,7 +23,8 @@ class Notebook(BaseModel):
                 if output_name in output_names and output_name != "":
                     cell.clear()
                     cell.set_status(CellStatus.ERROR)
-                    raise ValueError(f"Cell with output name {cell.output_name} already exists in the notebook")
+                    cell.set_output_name("")
+                    raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
                 cell.set_output_name(output_name)
 
     def get_cell(self, cell_id: UUID) -> Cell:

@@ -54,9 +54,10 @@ class Cell(BaseModel):
 
         if output_name == "":
             self.status = CellStatus.ERROR
-            raise ValueError(f"Cell name for cell ({self.id}) is empty")
+            self.clear()
+        else:
+            self.status = CellStatus.EXPIRED
 
-        self.status = CellStatus.EXPIRED
         for child in self.children:
             child.status = CellStatus.EXPIRED
         # TODO: Check if name is already taken by another cell in the notebook? Maybe just do this in notebook

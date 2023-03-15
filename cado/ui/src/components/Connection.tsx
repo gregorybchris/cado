@@ -39,14 +39,14 @@ export default function Connection() {
     sendJsonMessage(message as JsonObject);
   }
 
-  function serverSync() {
+  function loadNotebook() {
     sendMessage<GetNotebook>({
       type: MessageType.GET_NOTEBOOK,
     });
   }
 
   useEffect(() => {
-    serverSync();
+    loadNotebook();
   }, []);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function Connection() {
       } else if (message.type == MessageType.ERROR_RESPONSE) {
         const response = message as ErrorResponse;
         console.error(response);
-        serverSync();
+        loadNotebook();
       } else if (message.type == MessageType.UPDATE_CELL_RESPONSE) {
         const response = message as UpdateCellResponse;
         if (!notebook) {

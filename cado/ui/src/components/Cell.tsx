@@ -110,7 +110,7 @@ export default function Cell(props: CellProps) {
             <div className="inline-block">
               <div className="flex items-center">
                 <ArrowRight weight="bold" className="mx-2" />
-                <div>{JSON.stringify(props.cell.output)}</div>
+                <div className="">{JSON.stringify(props.cell.output)}</div>
               </div>
             </div>
           )}
