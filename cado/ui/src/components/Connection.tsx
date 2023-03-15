@@ -15,6 +15,7 @@ import CadoImage from "../images/cado.png";
 import Disconnect from "./Disconnect";
 import Notebook from "./Notebook";
 import Toolbar from "./Toolbar";
+import useImagePreloader from "../hooks/image";
 
 export default function Connection() {
   const didUnmount = useRef(false);
@@ -26,6 +27,7 @@ export default function Connection() {
     reconnectInterval: 2000,
   });
   const [notebook, setNotebook] = useState<Optional<NotebookModel>>(None);
+  useImagePreloader([CadoImage]);
 
   useEffect(() => {
     return () => {
