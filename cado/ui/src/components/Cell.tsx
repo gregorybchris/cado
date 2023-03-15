@@ -5,6 +5,7 @@ import {
   MessageType,
   RunCell,
   UpdateCellCode,
+  UpdateCellInputNames,
   UpdateCellOutputName,
 } from "../lib/models/message";
 import { useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import Button from "../widgets/Button";
 import CellModel from "../lib/models/cell";
 import { CellStatus } from "../lib/models/cellStatus";
 import CodeEditor from "@uiw/react-textarea-code-editor";
+import TextBox from "../widgets/TextBox";
 
 interface CellProps {
   cell: CellModel;
@@ -20,17 +22,31 @@ interface CellProps {
 }
 
 export default function Cell(props: CellProps) {
-  const [outputName, setOutputName] = useState("");
+  const [outputName, setOutputName] = useState<string>("");
+  const [inputNames, setInputNames] = useState<string>("");
 
   useEffect(() => {
     setOutputName(props.cell.output_name);
   }, [props.cell.output_name]);
+
+  useEffect(() => {
+    setInputNames(props.cell.input_names.join(", "));
+  }, [props.cell.input_names]);
 
   function updateCellOutputName() {
     props.sendMessage<UpdateCellOutputName>({
       cell_id: props.cell.id,
       output_name: outputName,
       type: MessageType.UPDATE_CELL_OUTPUT_NAME,
+    });
+  }
+
+  function updateCellInputNames() {
+    const inputNamesParsed = inputNames.replace(" ", "").split(",");
+    props.sendMessage<UpdateCellInputNames>({
+      cell_id: props.cell.id,
+      input_names: inputNamesParsed,
+      type: MessageType.UPDATE_CELL_INPUT_NAMES,
     });
   }
 
@@ -66,18 +82,26 @@ export default function Cell(props: CellProps) {
   return (
     <div>
       <div className="mx-5 mb-5 bg-dark-rock py-3">
-        <div className="flex items-center px-8">
-          <Button onClick={runCell} tooltip="Run" iconClass={Play} />
-          <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
-          <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
+        <div className="flex items-center justify-between px-8">
+          <div className="flex items-center">
+            <Button onClick={runCell} tooltip="Run" iconClass={Play} />
+            <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
+            <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
+
+            <div className="flex items-center">
+              {props.cell.status === CellStatus.ERROR && (
+                <WarningCircle className="text-red-500" weight="bold" size={18} />
+              )}
+              {props.cell.status === CellStatus.OK && (
+                <CheckCircle className="text-green-500" weight="bold" size={18} />
+              )}
+              {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
+              {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
+            </div>
+          </div>
 
           <div className="flex items-center">
-            {props.cell.status === CellStatus.ERROR && (
-              <WarningCircle className="text-red-500" weight="bold" size={18} />
-            )}
-            {props.cell.status === CellStatus.OK && <CheckCircle className="text-green-500" weight="bold" size={18} />}
-            {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
-            {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
+            <TextBox value={inputNames} placeholder="Inputs" onBlur={updateCellInputNames} onChange={setInputNames} />
           </div>
         </div>
 
@@ -97,14 +121,7 @@ export default function Cell(props: CellProps) {
         </div>
 
         <div className="mt-3 flex items-center px-8">
-          <input
-            className="inline-block w-24 rounded-md bg-rock py-2 px-4 outline-none duration-150 focus:bg-light-rock active:ease-linear"
-            type="text"
-            value={outputName}
-            placeholder="Output"
-            onBlur={updateCellOutputName}
-            onChange={(event) => setOutputName(event.target.value)}
-          ></input>
+          <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
 
           {props.cell.output && (
             <div className="inline-block">
