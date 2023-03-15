@@ -11,6 +11,8 @@ import NotebookModel, { updateNotebookCell } from "../lib/models/notebook";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
+import CadoImage from "../images/cado.png";
+import Disconnect from "./Disconnect";
 import Notebook from "./Notebook";
 import Toolbar from "./Toolbar";
 
@@ -76,7 +78,7 @@ export default function Connection() {
     <div>
       <Toolbar sendMessage={send} />
       {readyState === ReadyState.OPEN && notebook && <Notebook notebook={notebook} sendMessage={send} />}
-      {readyState !== ReadyState.OPEN && <div className="px-8">Disconnected from the cado sever</div>}
+      {readyState !== ReadyState.OPEN && <Disconnect image={CadoImage} />}
     </div>
   );
 }
