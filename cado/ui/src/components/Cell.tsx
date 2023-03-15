@@ -80,58 +80,54 @@ export default function Cell(props: CellProps) {
   }
 
   return (
-    <div>
-      <div className="mx-5 mb-5 bg-dark-rock py-3">
-        <div className="flex items-center justify-between px-8">
-          <div className="flex items-center">
-            <Button onClick={runCell} tooltip="Run" iconClass={Play} />
-            <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
-            <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
+    <div className="mx-5 mb-5 rounded-lg bg-dark-rock py-3">
+      <div className="flex items-center justify-between px-8">
+        <div className="flex items-center">
+          <Button onClick={runCell} tooltip="Run" iconClass={Play} />
+          <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
+          <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
 
+          <div className="flex items-center">
+            {props.cell.status === CellStatus.ERROR && (
+              <WarningCircle className="text-red-500" weight="bold" size={18} />
+            )}
+            {props.cell.status === CellStatus.OK && <CheckCircle className="text-green-500" weight="bold" size={18} />}
+            {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
+            {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <TextBox value={inputNames} placeholder="Inputs" onBlur={updateCellInputNames} onChange={setInputNames} />
+        </div>
+      </div>
+
+      <div className="bg-black-rock px-8">
+        <CodeEditor
+          className="my-3"
+          value={props.cell.code}
+          language="py"
+          onChange={(event) => updateCellCode(event.target.value)}
+          padding={15}
+          style={{
+            fontSize: 12,
+            backgroundColor: "#1d1f23",
+            fontFamily: "Menlo",
+          }}
+        />
+      </div>
+
+      <div className="mt-3 flex items-center px-8">
+        <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
+
+        {props.cell.output && (
+          <div className="inline-block">
             <div className="flex items-center">
-              {props.cell.status === CellStatus.ERROR && (
-                <WarningCircle className="text-red-500" weight="bold" size={18} />
-              )}
-              {props.cell.status === CellStatus.OK && (
-                <CheckCircle className="text-green-500" weight="bold" size={18} />
-              )}
-              {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
-              {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
+              <ArrowRight weight="bold" className="mx-2" />
+              <div className="">{JSON.stringify(props.cell.output)}</div>
             </div>
           </div>
-
-          <div className="flex items-center">
-            <TextBox value={inputNames} placeholder="Inputs" onBlur={updateCellInputNames} onChange={setInputNames} />
-          </div>
-        </div>
-
-        <div className="bg-black-rock px-8">
-          <CodeEditor
-            className="my-3"
-            value={props.cell.code}
-            language="py"
-            onChange={(event) => updateCellCode(event.target.value)}
-            padding={15}
-            style={{
-              fontSize: 12,
-              backgroundColor: "#1d1f23",
-              fontFamily: "Menlo",
-            }}
-          />
-        </div>
-
-        <div className="mt-3 flex items-center px-8">
-          <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
-
-          {props.cell.output && (
-            <div className="inline-block">
-              <div className="flex items-center">
-                <ArrowRight weight="bold" className="mx-2" />
-                <div className="">{JSON.stringify(props.cell.output)}</div>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
