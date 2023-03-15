@@ -1,4 +1,5 @@
 import { CellStatus } from "./cellStatus";
+import { Language } from "./language";
 import { Optional } from "../types";
 
 export default interface Cell {
@@ -8,6 +9,7 @@ export default interface Cell {
   output: Optional<any>;
   output_name: string;
   input_names: string[];
+  language: Language;
 
   printed: Optional<string>;
   status: CellStatus;

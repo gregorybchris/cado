@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from cado.core.cell import Cell
+from cado.core.language import Language
 from cado.core.notebook import Notebook
 
 
@@ -14,6 +15,7 @@ class MessageType(Enum):
     UPDATE_CELL_CODE = "update-cell-code"
     UPDATE_CELL_OUTPUT_NAME = "update-cell-output-name"
     UPDATE_CELL_INPUT_NAMES = "update-cell-input-names"
+    UPDATE_CELL_LANGUAGE = "update-cell-language"
     RUN_CELL = "run-cell"
     CLEAR_CELL = "clear-cell"
     NEW_CELL = "new-cell"
@@ -70,6 +72,12 @@ class UpdateCellInputNames(Message):
     cell_id: UUID
     input_names: List[str]
     type: MessageType = MessageType.UPDATE_CELL_INPUT_NAMES
+
+
+class UpdateCellLanguage(Message):
+    cell_id: UUID
+    language: Language
+    type: MessageType = MessageType.UPDATE_CELL_LANGUAGE
 
 
 class RunCell(Message):

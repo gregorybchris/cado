@@ -19,6 +19,7 @@ from cado.app.message import (
     RunCell,
     UpdateCellCode,
     UpdateCellInputNames,
+    UpdateCellLanguage,
     UpdateCellOutputName,
 )
 from cado.core.notebook import Notebook
@@ -95,6 +96,10 @@ def _get_response(message_type: MessageType, message_json: Any, notebook: Notebo
     elif message_type == MessageType.UPDATE_CELL_INPUT_NAMES:
         update_cell_input_names = UpdateCellInputNames.parse_obj(message_json)
         notebook.update_cell_input_names(update_cell_input_names.cell_id, update_cell_input_names.input_names)
+        return GetNotebookResponse(notebook=notebook)
+    elif message_type == MessageType.UPDATE_CELL_LANGUAGE:
+        update_cell_language = UpdateCellLanguage.parse_obj(message_json)
+        notebook.update_cell_language(update_cell_language.cell_id, update_cell_language.language)
         return GetNotebookResponse(notebook=notebook)
     else:
         logger.error("Request type did not match any known message types")

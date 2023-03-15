@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from cado.core.cell import Cell
 from cado.core.cell_status import CellStatus
+from cado.core.language import Language
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,16 @@ class Notebook(BaseModel):
         if cell.status == CellStatus.OK:
             for child in self._get_children(cell):
                 self.run_cell(child.id)
+
+    def update_cell_language(self, cell_id: UUID, language: Language) -> None:
+        """Run a cell in the notebook.
+
+        Args:
+            cell_id (UUID): ID of the cell to run.
+            language (Language): New language to use.
+        """
+        cell = self.get_cell(cell_id)
+        cell.set_language(language)
 
     def clear_cell(self, cell_id: UUID) -> None:
         """Clear a cell in the notebook.

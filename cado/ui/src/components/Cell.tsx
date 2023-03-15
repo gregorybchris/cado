@@ -6,6 +6,7 @@ import {
   RunCell,
   UpdateCellCode,
   UpdateCellInputNames,
+  UpdateCellLanguage,
   UpdateCellOutputName,
 } from "../lib/models/message";
 import { useEffect, useState } from "react";
@@ -14,6 +15,9 @@ import Button from "../widgets/Button";
 import CellModel from "../lib/models/cell";
 import { CellStatus } from "../lib/models/cellStatus";
 import CodeEditor from "@uiw/react-textarea-code-editor";
+import { Language } from "../lib/models/language";
+import { BsMarkdown as MarkdownIcon } from "react-icons/bs";
+import { TbBrandPython as PythonIcon } from "react-icons/tb";
 import TextBox from "../widgets/TextBox";
 
 interface CellProps {
@@ -81,33 +85,65 @@ export default function Cell(props: CellProps) {
     });
   }
 
+  function updateCellLanguage() {
+    const newLanguage = props.cell.language == Language.PYTHON ? Language.MARKDOWN : Language.PYTHON;
+    props.sendMessage<UpdateCellLanguage>({
+      cell_id: props.cell.id,
+      language: newLanguage,
+      type: MessageType.UPDATE_CELL_LANGUAGE,
+    });
+  }
+
+  function getLanguageCode() {
+    if (props.cell.language == Language.PYTHON) return "py";
+    if (props.cell.language == Language.MARKDOWN) return "md";
+    return "py";
+  }
+
   return (
     <div className="mx-5 my-4 rounded-lg bg-dark-rock py-3">
       <div className="flex items-center justify-between px-5">
-        <div className="flex items-center">
-          <Button onClick={runCell} tooltip="Run" iconClass={Play} />
-          <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
-          <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
+        <div>
+          {props.cell.language == Language.PYTHON && (
+            <div className="flex items-center">
+              <Button onClick={runCell} tooltip="Run" iconClass={Play} />
+              <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
 
-          <div className="flex items-center">
-            {props.cell.status === CellStatus.ERROR && (
-              <WarningCircle className="text-red-500" weight="bold" size={18} />
-            )}
-            {props.cell.status === CellStatus.OK && <CheckCircle className="text-green-500" weight="bold" size={18} />}
-            {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
-            {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
-          </div>
+              <div className="flex items-center">
+                {props.cell.status === CellStatus.ERROR && (
+                  <WarningCircle className="text-red-500" weight="bold" size={18} />
+                )}
+                {props.cell.status === CellStatus.OK && (
+                  <CheckCircle className="text-green-500" weight="bold" size={18} />
+                )}
+                {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
+                {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center">
-          <TextBox value={inputNames} placeholder="Inputs" onBlur={updateCellInputNames} onChange={setInputNames} />
+          {props.cell.language == Language.PYTHON && (
+            <TextBox value={inputNames} placeholder="Inputs" onBlur={updateCellInputNames} onChange={setInputNames} />
+          )}
+
+          <div
+            onClick={updateCellLanguage}
+            className="mx-5 cursor-pointer rounded-lg bg-rock px-2 py-2 duration-150 hover:bg-light-rock hover:ease-linear"
+          >
+            {props.cell.language == Language.MARKDOWN && <MarkdownIcon />}
+            {props.cell.language == Language.PYTHON && <PythonIcon />}
+          </div>
+
+          <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
         </div>
       </div>
 
       <div className="my-3 bg-black-rock px-5">
         <CodeEditor
           value={props.cell.code}
-          language="py"
+          language={getLanguageCode()}
           onChange={(event) => updateCellCode(event.target.value)}
           padding={15}
           style={{
@@ -118,18 +154,20 @@ export default function Cell(props: CellProps) {
         />
       </div>
 
-      <div className="flex items-center px-5">
-        <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
+      {props.cell.language == Language.PYTHON && (
+        <div className="flex items-center px-5">
+          <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
 
-        {props.cell.output && (
-          <div className="inline-block">
-            <div className="flex items-center">
-              <ArrowRight weight="bold" className="mx-2" />
-              <div>{JSON.stringify(props.cell.output)}</div>
+          {props.cell.output && (
+            <div className="inline-block">
+              <div className="flex items-center">
+                <ArrowRight weight="bold" className="mx-2" />
+                <div>{JSON.stringify(props.cell.output)}</div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

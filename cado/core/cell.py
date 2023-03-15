@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 
 from cado.core.cell_status import CellStatus
+from cado.core.language import Language
 
 
 class Cell(BaseModel):
@@ -14,6 +15,7 @@ class Cell(BaseModel):
     output_name: str
     output: Optional[Any] = None
     input_names: List[str] = []
+    language: Language = Language.PYTHON
 
     printed: Optional[str] = None
     status: CellStatus = CellStatus.EXPIRED
@@ -25,6 +27,14 @@ class Cell(BaseModel):
             status (CellStatus): New cell status.
         """
         self.status = status
+
+    def set_language(self, language: Language) -> None:
+        """Set the cell's language.
+
+        Args:
+            language (Language): New cell language.
+        """
+        self.language = language
 
     def set_code(self, code: str) -> None:
         """Set the cell's code block.

@@ -1,4 +1,5 @@
 import Cell from "./cell";
+import { Language } from "./language";
 import Notebook from "./notebook";
 
 export enum MessageType {
@@ -7,6 +8,7 @@ export enum MessageType {
   UPDATE_CELL_CODE = "update-cell-code",
   UPDATE_CELL_OUTPUT_NAME = "update-cell-output-name",
   UPDATE_CELL_INPUT_NAMES = "update-cell-input-names",
+  UPDATE_CELL_LANGUAGE = "update-cell-language",
   RUN_CELL = "run-cell",
   CLEAR_CELL = "clear-cell",
   NEW_CELL = "new-cell",
@@ -42,6 +44,12 @@ export interface UpdateCellInputNames {
   cell_id: string;
   input_names: string[];
   type: MessageType.UPDATE_CELL_INPUT_NAMES;
+}
+
+export interface UpdateCellLanguage {
+  cell_id: string;
+  language: Language;
+  type: MessageType.UPDATE_CELL_LANGUAGE;
 }
 
 export interface RunCell {
