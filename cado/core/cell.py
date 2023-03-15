@@ -67,9 +67,9 @@ class Cell(BaseModel):
         try:
             # pylint: disable=exec-used
             exec(self.code, context, exec_locals)
-        except Exception:
+        except Exception as exc:
             self.set_error()
-            raise ValueError(f"Failed to exec: {traceback.format_exc()}")
+            raise ValueError(f"Failed to exec: {traceback.format_exc()}") from exc
 
         # Check that a variable with the cell output name was emitted by exec
         if self.output_name not in exec_locals:
@@ -79,10 +79,12 @@ class Cell(BaseModel):
         self.set_status(CellStatus.OK)
 
     def clear(self) -> None:
+        """Clear the cell outputs and set the status to expired."""
         self.output = None
         self.printed = None
         self.set_status(CellStatus.EXPIRED)
 
     def set_error(self) -> None:
+        """Clear the cell outputs and set the status to error."""
         self.output = None
         self.set_status(CellStatus.ERROR)

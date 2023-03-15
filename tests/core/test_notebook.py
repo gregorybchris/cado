@@ -1,14 +1,9 @@
-from pathlib import Path
-
-import pytest
-
 from cado.core.notebook import Notebook
 
 
 class TestNotebook:
 
-    @pytest.mark.skip("Haven't gotten reading working")
-    def test_run_cell(self):
+    def test_create(self):
         notebook_filename = "notebook.cado"
-        notebook = Notebook.from_filepath(Path(notebook_filename))
-        notebook.run_cell("cell_1")
+        notebook = Notebook(name=notebook_filename)
+        assert notebook.name == notebook_filename

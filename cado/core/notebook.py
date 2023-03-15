@@ -17,6 +17,12 @@ class Notebook(BaseModel):
     cells: List[Cell] = []
 
     def update_cell_output_name(self, cell_id: UUID, output_name: str) -> None:
+        """Set a notebook cell's output name.
+
+        Args:
+            cell_id (UUID): ID of the cell.
+            output_name (str): Name for the output variable.
+        """
         self.clear_cell(cell_id)
 
         output_names = set()
@@ -26,7 +32,7 @@ class Notebook(BaseModel):
 
         cell = self.get_cell(cell_id)
 
-        for child in self.get_children(cell):
+        for child in self._get_children(cell):
             child.clear()
 
         if output_name in output_names:
@@ -36,7 +42,13 @@ class Notebook(BaseModel):
 
         cell.set_output_name(output_name)
 
-    def update_cell_input_names(self, cell_id: UUID, input_names: str) -> None:
+    def update_cell_input_names(self, cell_id: UUID, input_names: List[str]) -> None:
+        """Set a notebook cell's input names.
+
+        Args:
+            cell_id (UUID): ID of the cell.
+            input_names (List[str]): Names for the input variables.
+        """
         self.clear_cell(cell_id)
 
         output_names = set()
@@ -82,18 +94,23 @@ class Notebook(BaseModel):
         """
         self.cells = [c for c in self.cells if c.id != cell_id]
 
-    def add_cell(self) -> None:
-        """Add a cell to the notebook."""
+    def add_cell(self) -> UUID:
+        """Add a cell to the notebook.
+
+        Returns:
+            UUID: ID of the new cell.
+        """
         new_cell = Cell(output_name="")
         self.cells.append(new_cell)
+        return new_cell.id
 
-    def get_children(self, cell: Cell) -> Iterator[Cell]:
+    def _get_children(self, cell: Cell) -> Iterator[Cell]:
         for other in self.cells:
             for input_name in other.input_names:
                 if input_name == cell.output_name:
                     yield other
 
-    def get_parents(self, cell: Cell) -> Iterator[Cell]:
+    def _get_parents(self, cell: Cell) -> Iterator[Cell]:
         for other in self.cells:
             for input_name in cell.input_names:
                 if other.output_name == input_name:
@@ -108,7 +125,7 @@ class Notebook(BaseModel):
         cell = self.get_cell(cell_id)
 
         context: Dict[str, Any] = {}
-        for parent in self.get_parents(cell):
+        for parent in self._get_parents(cell):
             if parent.status == CellStatus.EXPIRED:
                 self.run_cell(parent.id)
             context[parent.output_name] = parent.output
@@ -117,7 +134,7 @@ class Notebook(BaseModel):
         cell.run(context)
 
         if cell.status == CellStatus.OK:
-            for child in self.get_children(cell):
+            for child in self._get_children(cell):
                 self.run_cell(child.id)
 
     def clear_cell(self, cell_id: UUID) -> None:
@@ -129,7 +146,7 @@ class Notebook(BaseModel):
         cell = self.get_cell(cell_id)
         cell.clear()
 
-        for child in self.get_children(cell):
+        for child in self._get_children(cell):
             self.clear_cell(child.id)
 
     @classmethod

@@ -1,11 +1,13 @@
 from pathlib import Path
+from typing import List
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from cado.app import routes
 
-ALLOWED_ORIGINS = []
+ALLOWED_ORIGINS: List[str] = []
 
 app = FastAPI()
 

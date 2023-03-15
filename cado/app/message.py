@@ -26,6 +26,17 @@ class MessageType(Enum):
 
     @classmethod
     def from_str(cls, message_name: str) -> 'MessageType':
+        """Parse MessageType from string.
+
+        Args:
+            message_name (str): Name of message type to parse.
+
+        Raises:
+            ValueError: If the name was not a valid message type.
+
+        Returns:
+            MessageType: The parsed MessageType.
+        """
         for _, enum_value in cls.__members__.items():
             if enum_value.value == message_name:
                 return enum_value
@@ -40,44 +51,44 @@ class Message(BaseModel):
 
 
 class GetNotebook(Message):
-    type = MessageType.GET_NOTEBOOK
+    type: MessageType = MessageType.GET_NOTEBOOK
 
 
 class UpdateCellCode(Message):
     cell_id: UUID
     code: str
-    type = MessageType.UPDATE_CELL_CODE
+    type: MessageType = MessageType.UPDATE_CELL_CODE
 
 
 class UpdateCellOutputName(Message):
     cell_id: UUID
     output_name: str
-    type = MessageType.UPDATE_CELL_OUTPUT_NAME
+    type: MessageType = MessageType.UPDATE_CELL_OUTPUT_NAME
 
 
 class UpdateCellInputNames(Message):
     cell_id: UUID
     input_names: List[str]
-    type = MessageType.UPDATE_CELL_INPUT_NAMES
+    type: MessageType = MessageType.UPDATE_CELL_INPUT_NAMES
 
 
 class RunCell(Message):
     cell_id: UUID
-    type = MessageType.RUN_CELL
+    type: MessageType = MessageType.RUN_CELL
 
 
 class ClearCell(Message):
     cell_id: UUID
-    type = MessageType.CLEAR_CELL
+    type: MessageType = MessageType.CLEAR_CELL
 
 
 class NewCell(Message):
-    type = MessageType.NEW_CELL
+    type: MessageType = MessageType.NEW_CELL
 
 
 class DeleteCell(Message):
     cell_id: UUID
-    type = MessageType.DELETE_CELL
+    type: MessageType = MessageType.DELETE_CELL
 
 
 # endregion: publish
@@ -87,17 +98,17 @@ class DeleteCell(Message):
 
 class GetNotebookResponse(Message):
     notebook: Notebook
-    type = MessageType.GET_NOTEBOOK_RESPONSE
+    type: MessageType = MessageType.GET_NOTEBOOK_RESPONSE
 
 
 class GetCellResponse(Message):
     cell: Cell
-    type = MessageType.GET_CELL_RESPONSE
+    type: MessageType = MessageType.GET_CELL_RESPONSE
 
 
 class ErrorResponse(Message):
     error: str
-    type = MessageType.ERROR_RESPONSE
+    type: MessageType = MessageType.ERROR_RESPONSE
 
 
 # endregion: subscribe
