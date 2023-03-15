@@ -51,15 +51,15 @@ jobs:
         with:
           node-version: 18
           cache: yarn
-        working-directory: cado/app/ui
+          cache-dependency-path: cado/ui/yarn.lock
 
       - name: Install UI dependencies
         run: yarn install
-        working-directory: cado/app/ui
+        working-directory: cado/ui
 
       - name: Build UI bundle
         run: yarn build
-        working-directory: cado/app/ui
+        working-directory: cado/ui
 
       - name: Run pytest
         run: |
