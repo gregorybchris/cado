@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, List, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -15,10 +15,8 @@ class Cell(BaseModel):
     output: Optional[Any] = None
     input_names: List[str] = []
 
-    parents: List["Cell"] = []
-    children: List["Cell"] = []
     printed: Optional[str] = None
-    status: CellStatus = CellStatus.ERROR
+    status: CellStatus = CellStatus.EXPIRED
 
     def set_status(self, status: CellStatus) -> None:
         """Set the cell's status.
@@ -34,9 +32,6 @@ class Cell(BaseModel):
         Args:
             code (str): Code the cell should contain.
         """
-        self.set_status(CellStatus.EXPIRED)
-        self.output = None
-        self.printed = None
         self.code = code
 
     def set_output_name(self, output_name: str) -> None:
@@ -45,22 +40,7 @@ class Cell(BaseModel):
         Args:
             output_name (str): The new output_name of the cell.
         """
-        if self.output_name == output_name:
-            return
-
         self.output_name = output_name
-        self.output = None
-        self.printed = None
-
-        if output_name == "":
-            self.clear()
-            self.set_status(CellStatus.ERROR)
-        else:
-            self.set_status(CellStatus.EXPIRED)
-
-        for child in self.children:
-            child.status = CellStatus.EXPIRED
-        # TODO: Check if name is already taken by another cell in the notebook? Maybe just do this in notebook
 
     def set_input_names(self, input_names: List[str]) -> None:
         """Set the input names of the cell.
@@ -70,46 +50,39 @@ class Cell(BaseModel):
         """
         self.input_names = input_names
 
-    def run(self) -> None:
+    def run(self, context: Dict[str, Any]) -> None:
         """Run the cell.
 
         Returns:
             Any: The output of running the cell.
         """
-        self.set_status(CellStatus.OK)
         if self.code == "":
-            self.output = None
-            self.printed = None
-            self.set_status(CellStatus.ERROR)
-            raise ValueError(f"Code is empty for cell {self.id} (name=\"{self.output_name}\")")
-        context = {}
-        for parent in self.parents:
-            if parent.status == CellStatus.EXPIRED:
-                parent.run()
-            context[parent.output_name] = parent.output
+            self.set_error()
+            raise ValueError(f"Code is empty for cell \"{self.id}\"")
+        if self.output_name == "":
+            self.set_error()
+            raise ValueError(f"No output name set for cell \"{self.id}\"")
 
-        defs: Mapping[str, object] = {}
+        exec_locals: Mapping[str, object] = {}
         try:
             # pylint: disable=exec-used
-            exec(self.code, context, defs)
+            exec(self.code, context, exec_locals)
         except Exception:
-            self.output = None
-            self.printed = None
-            self.set_status(CellStatus.ERROR)
+            self.set_error()
             raise ValueError(f"Failed to exec: {traceback.format_exc()}")
 
-        if self.output_name not in defs:
-            self.output = None
-            self.printed = None
-            self.set_status(CellStatus.ERROR)
+        # Check that a variable with the cell output name was emitted by exec
+        if self.output_name not in exec_locals:
+            self.set_error()
             raise ValueError(f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
-        self.output = defs[self.output_name]
+        self.output = exec_locals[self.output_name]
         self.set_status(CellStatus.OK)
-
-        for child in self.children:
-            child.run()
 
     def clear(self) -> None:
         self.output = None
         self.printed = None
         self.set_status(CellStatus.EXPIRED)
+
+    def set_error(self) -> None:
+        self.output = None
+        self.set_status(CellStatus.ERROR)

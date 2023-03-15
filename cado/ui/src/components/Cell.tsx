@@ -34,6 +34,7 @@ export default function Cell(props: CellProps) {
   }, [props.cell.input_names]);
 
   function updateCellOutputName() {
+    setOutputName(props.cell.output_name);
     props.sendMessage<UpdateCellOutputName>({
       cell_id: props.cell.id,
       output_name: outputName,
@@ -42,6 +43,7 @@ export default function Cell(props: CellProps) {
   }
 
   function updateCellInputNames() {
+    setInputNames(props.cell.input_names.join(", "));
     const inputNamesParsed = inputNames.replace(" ", "").split(",");
     props.sendMessage<UpdateCellInputNames>({
       cell_id: props.cell.id,
@@ -80,8 +82,8 @@ export default function Cell(props: CellProps) {
   }
 
   return (
-    <div className="mx-5 mb-5 rounded-lg bg-dark-rock py-3">
-      <div className="flex items-center justify-between px-8">
+    <div className="mx-5 my-4 rounded-lg bg-dark-rock py-3">
+      <div className="flex items-center justify-between px-5">
         <div className="flex items-center">
           <Button onClick={runCell} tooltip="Run" iconClass={Play} />
           <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
@@ -102,9 +104,8 @@ export default function Cell(props: CellProps) {
         </div>
       </div>
 
-      <div className="bg-black-rock px-8">
+      <div className="my-3 bg-black-rock px-5">
         <CodeEditor
-          className="my-3"
           value={props.cell.code}
           language="py"
           onChange={(event) => updateCellCode(event.target.value)}
@@ -117,14 +118,14 @@ export default function Cell(props: CellProps) {
         />
       </div>
 
-      <div className="mt-3 flex items-center px-8">
+      <div className="flex items-center px-5">
         <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
 
         {props.cell.output && (
           <div className="inline-block">
             <div className="flex items-center">
               <ArrowRight weight="bold" className="mx-2" />
-              <div className="">{JSON.stringify(props.cell.output)}</div>
+              <div>{JSON.stringify(props.cell.output)}</div>
             </div>
           </div>
         )}

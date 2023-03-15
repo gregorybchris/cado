@@ -1,6 +1,7 @@
 import json
+import logging
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, Iterator, List
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -8,39 +9,48 @@ from pydantic import BaseModel
 from cado.core.cell import Cell
 from cado.core.cell_status import CellStatus
 
+logger = logging.getLogger(__name__)
+
 
 class Notebook(BaseModel):
     name: str
     cells: List[Cell] = []
 
     def update_cell_output_name(self, cell_id: UUID, output_name: str) -> None:
+        self.clear_cell(cell_id)
+
         output_names = set()
         for cell in self.cells:
-            if cell.id != cell_id:
+            if cell.id != cell_id and cell.output_name != "":
                 output_names.add(cell.output_name)
 
-        for cell in self.cells:
-            if cell.id == cell_id:
-                if output_name in output_names and output_name != "":
-                    cell.clear()
-                    cell.set_status(CellStatus.ERROR)
-                    cell.set_output_name("")
-                    raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
-                cell.set_output_name(output_name)
+        cell = self.get_cell(cell_id)
+
+        for child in self.get_children(cell):
+            child.clear()
+
+        if output_name in output_names:
+            cell.set_error()
+            cell.set_output_name("")
+            raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
+
+        cell.set_output_name(output_name)
 
     def update_cell_input_names(self, cell_id: UUID, input_names: str) -> None:
+        self.clear_cell(cell_id)
+
         output_names = set()
         for cell in self.cells:
-            if cell.id != cell_id:
+            if cell.id != cell_id and cell.output_name != "":
                 output_names.add(cell.output_name)
 
-        for cell in self.cells:
-            if cell.id == cell_id:
-                valid_input_names = []
-                for input_name in input_names:
-                    if input_name in output_names:
-                        valid_input_names.append(input_name)
-                cell.set_input_names(valid_input_names)
+        cell = self.get_cell(cell_id)
+        for input_name in input_names:
+            if input_name not in output_names:
+                cell.set_error()
+                cell.set_input_names([])
+                raise ValueError(f"No cell with output name \"{input_name}\"")
+        cell.set_input_names(input_names)
 
     def set_cell_code(self, cell_id: UUID, code: str) -> None:
         """Set a notebook cell's code.
@@ -49,10 +59,9 @@ class Notebook(BaseModel):
             cell_id (UUID): ID of the cell.
             code (str): String of code to set on the cell.
         """
-        for cell in self.cells:
-            if cell.id == cell_id:
-                cell.set_code(code)
-        raise ValueError(f"No cell with ID {cell_id} found in notebook")
+        cell = self.get_cell(cell_id)
+        cell.set_code(code)
+        self.clear_cell(cell.id)
 
     def get_cell(self, cell_id: UUID) -> Cell:
         """Get a cell from the notebook.
@@ -78,17 +87,38 @@ class Notebook(BaseModel):
         new_cell = Cell(output_name="")
         self.cells.append(new_cell)
 
+    def get_children(self, cell: Cell) -> Iterator[Cell]:
+        for other in self.cells:
+            for input_name in other.input_names:
+                if input_name == cell.output_name:
+                    yield other
+
+    def get_parents(self, cell: Cell) -> Iterator[Cell]:
+        for other in self.cells:
+            for input_name in cell.input_names:
+                if other.output_name == input_name:
+                    yield other
+
     def run_cell(self, cell_id: UUID) -> None:
         """Run a cell in the notebook.
 
         Args:
             cell_id (UUID): ID of the cell to run.
         """
-        for cell in self.cells:
-            if cell.id == cell_id:
-                cell.run()
-                return
-        raise ValueError(f"Cell {cell_id} is not in this notebook")
+        cell = self.get_cell(cell_id)
+
+        context: Dict[str, Any] = {}
+        for parent in self.get_parents(cell):
+            if parent.status == CellStatus.EXPIRED:
+                self.run_cell(parent.id)
+            context[parent.output_name] = parent.output
+
+        logger.info("Running cell %s", cell.id)
+        cell.run(context)
+
+        if cell.status == CellStatus.OK:
+            for child in self.get_children(cell):
+                self.run_cell(child.id)
 
     def clear_cell(self, cell_id: UUID) -> None:
         """Clear a cell in the notebook.
@@ -96,11 +126,11 @@ class Notebook(BaseModel):
         Args:
             cell_id (UUID): ID of the cell to clear.
         """
-        for cell in self.cells:
-            if cell.id == cell_id:
-                cell.clear()
-                return
-        raise ValueError(f"Cell {cell_id} is not in this notebook")
+        cell = self.get_cell(cell_id)
+        cell.clear()
+
+        for child in self.get_children(cell):
+            self.clear_cell(child.id)
 
     @classmethod
     def from_filepath(cls, filepath: Path) -> "Notebook":
