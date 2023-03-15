@@ -9,10 +9,12 @@ module.exports = {
         "black-rock": "#1d1f23",
         "dark-rock": "#22252a",
         "light-rock": "#2c3039",
+        "lighter-rock": "#464c5b",
       },
     },
     fontFamily: {
       sen: "Sen",
+      poppins: "Poppins",
     },
   },
   plugins: [],

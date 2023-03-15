@@ -34,7 +34,7 @@ class Cell(BaseModel):
         Args:
             code (str): Code the cell should contain.
         """
-        self.status = CellStatus.EXPIRED
+        self.set_status(CellStatus.EXPIRED)
         self.output = None
         self.printed = None
         self.code = code
@@ -53,10 +53,10 @@ class Cell(BaseModel):
         self.printed = None
 
         if output_name == "":
-            self.status = CellStatus.ERROR
             self.clear()
+            self.set_status(CellStatus.ERROR)
         else:
-            self.status = CellStatus.EXPIRED
+            self.set_status(CellStatus.EXPIRED)
 
         for child in self.children:
             child.status = CellStatus.EXPIRED
@@ -76,11 +76,11 @@ class Cell(BaseModel):
         Returns:
             Any: The output of running the cell.
         """
-        self.status = CellStatus.OK
+        self.set_status(CellStatus.OK)
         if self.code == "":
             self.output = None
             self.printed = None
-            self.status = CellStatus.ERROR
+            self.set_status(CellStatus.ERROR)
             raise ValueError(f"Code is empty for cell {self.id} (name=\"{self.output_name}\")")
         context = {}
         for parent in self.parents:
@@ -95,16 +95,16 @@ class Cell(BaseModel):
         except Exception:
             self.output = None
             self.printed = None
-            self.status = CellStatus.ERROR
+            self.set_status(CellStatus.ERROR)
             raise ValueError(f"Failed to exec: {traceback.format_exc()}")
 
         if self.output_name not in defs:
             self.output = None
             self.printed = None
-            self.status = CellStatus.ERROR
+            self.set_status(CellStatus.ERROR)
             raise ValueError(f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
         self.output = defs[self.output_name]
-        self.status = CellStatus.OK
+        self.set_status(CellStatus.OK)
 
         for child in self.children:
             child.run()
@@ -112,3 +112,4 @@ class Cell(BaseModel):
     def clear(self) -> None:
         self.output = None
         self.printed = None
+        self.set_status(CellStatus.EXPIRED)

@@ -55,10 +55,6 @@ export default function Connection() {
       if (message.type == MessageType.GET_NOTEBOOK_RESPONSE) {
         const response = message as GetNotebookResponse;
         setNotebook(response.notebook);
-      } else if (message.type == MessageType.ERROR_RESPONSE) {
-        const response = message as ErrorResponse;
-        console.error(response);
-        loadNotebook();
       } else if (message.type == MessageType.GET_CELL_RESPONSE) {
         const response = message as GetCellResponse;
         if (!notebook) {
@@ -66,6 +62,10 @@ export default function Connection() {
           return;
         }
         setNotebook(updateNotebookCell(notebook, response.cell));
+      } else if (message.type == MessageType.ERROR_RESPONSE) {
+        const response = message as ErrorResponse;
+        console.error(response);
+        loadNotebook();
       } else {
         console.error("Response type did not match any known message types", message.type);
       }

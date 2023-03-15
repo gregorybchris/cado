@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@fontsource/poppins": "^4.5.10",
     "@fontsource/sen": "^4.5.9",
     "@phosphor-icons/react": "^2.0.5",
     "@types/node": "18.11.9",
