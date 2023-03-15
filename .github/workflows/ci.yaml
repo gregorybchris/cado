@@ -51,6 +51,7 @@ jobs:
         with:
           node-version: 18
           cache: yarn
+        working-directory: cado/app/ui
 
       - name: Install UI dependencies
         run: yarn install
