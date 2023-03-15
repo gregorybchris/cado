@@ -7,17 +7,16 @@ import {
   MessageType,
 } from "../lib/models/message";
 import { None, Optional } from "../lib/types";
-import NotebookModel, { addNotebookCell, updateNotebookCell } from "../lib/models/notebook";
+import NotebookModel, { updateNotebookCell } from "../lib/models/notebook";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
-import { JsonObject } from "react-use-websocket/dist/lib/types";
 import Notebook from "./Notebook";
 import Toolbar from "./Toolbar";
 
 export default function Connection() {
   const didUnmount = useRef(false);
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://localhost:8000/stream", {
+  const { sendMessage, lastMessage, readyState } = useWebSocket("ws://localhost:8000/stream", {
     shouldReconnect: (closeEvent) => {
       return didUnmount.current === false;
     },
@@ -32,13 +31,13 @@ export default function Connection() {
     };
   }, []);
 
-  function sendMessage<M>(message: M) {
+  function send<M>(message: M) {
     console.log("Sending message: ", message);
-    sendJsonMessage(message as JsonObject);
+    sendMessage(JSON.stringify(message));
   }
 
   function loadNotebook() {
-    sendMessage<GetNotebook>({
+    send<GetNotebook>({
       type: MessageType.GET_NOTEBOOK,
     });
   }
@@ -48,8 +47,9 @@ export default function Connection() {
   }, []);
 
   useEffect(() => {
-    if (lastJsonMessage !== null) {
-      const message = JSON.parse(lastJsonMessage as unknown as string) as Message;
+    if (lastMessage !== null) {
+      const messageJson = JSON.parse(JSON.parse(lastMessage.data));
+      const message = messageJson as Message;
       console.log("Got websocket message: ", message);
 
       if (message.type == MessageType.GET_NOTEBOOK_RESPONSE) {
@@ -70,12 +70,12 @@ export default function Connection() {
         console.error("Response type did not match any known message types", message.type);
       }
     }
-  }, [lastJsonMessage]);
+  }, [lastMessage]);
 
   return (
     <div>
-      <Toolbar sendMessage={sendMessage} />
-      {readyState === ReadyState.OPEN && notebook && <Notebook notebook={notebook} sendMessage={sendMessage} />}
+      <Toolbar sendMessage={send} />
+      {readyState === ReadyState.OPEN && notebook && <Notebook notebook={notebook} sendMessage={send} />}
       {readyState !== ReadyState.OPEN && <div className="px-8">Disconnected from the Cado sever</div>}
     </div>
   );
