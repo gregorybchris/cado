@@ -19,7 +19,7 @@ jobs:
           - "3.9"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Python ${{ matrix.python-version }} Setup
         uses: actions/setup-python@v2
@@ -32,19 +32,38 @@ jobs:
           if [ -d /poetryenvs ]; then rm -rf ~/poetryenvs; fi
           poetry config virtualenvs.path ~/poetryenvs
           poetry install
+
       - name: Run flake8
         run: |
           poetry run pflake8 cado --config pyproject.toml
           poetry run pflake8 tests --config pyproject.toml
+
       - name: Run pylint
         run: |
           poetry run pylint cado --rcfile pyproject.toml
+
       - name: Run mypy
         run: |
           poetry run mypy cado --config pyproject.toml
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install UI dependencies
+        run: yarn install
+        working-directory: cado/app/ui
+
+      - name: Build UI bundle
+        run: yarn build
+        working-directory: cado/app/ui
+
       - name: Run pytest
         run: |
           poetry run pytest tests --cov=cado --cov-report=html --cov-report=xml --cov-branch
+
       - name: Upload HTML Coverage
         uses: actions/upload-artifact@v2
         with:
