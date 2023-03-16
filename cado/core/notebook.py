@@ -41,10 +41,10 @@ class Notebook(BaseModel):
 
         if output_name in output_names:
             cell.set_error()
-            cell.set_output_name("")
+            cell.output_name = ""
             raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
 
-        cell.set_output_name(output_name)
+        cell.output_name = output_name
 
     def update_cell_input_names(self, cell_id: UUID, input_names: List[str]) -> None:
         """Set a notebook cell's input names.
@@ -64,9 +64,9 @@ class Notebook(BaseModel):
         for input_name in input_names:
             if input_name not in output_names:
                 cell.set_error()
-                cell.set_input_names([])
+                cell.input_names = []
                 raise ValueError(f"No cell with output name \"{input_name}\"")
-        cell.set_input_names(input_names)
+        cell.input_names = input_names
 
     def set_cell_code(self, cell_id: UUID, code: str) -> None:
         """Set a notebook cell's code.
@@ -76,7 +76,7 @@ class Notebook(BaseModel):
             code (str): String of code to set on the cell.
         """
         cell = self.get_cell(cell_id)
-        cell.set_code(code)
+        cell.code = code
         self.clear_cell(cell.id)
 
     def get_cell(self, cell_id: UUID) -> Cell:
@@ -149,7 +149,8 @@ class Notebook(BaseModel):
             language (Language): New language to use.
         """
         cell = self.get_cell(cell_id)
-        cell.set_language(language)
+        cell.language = language
+        cell.clear()
 
     def clear_cell(self, cell_id: UUID) -> None:
         """Clear a cell in the notebook.
@@ -162,6 +163,18 @@ class Notebook(BaseModel):
 
         for child in self._get_children(cell):
             self.clear_cell(child.id)
+
+    def reorder_cells(self, cell_ids: List[UUID]) -> None:
+        """Reorder cells in the notebook.
+
+        Args:
+            cell_ids (List[UUID]): List of cell IDs in the correct order.
+        """
+        new_cells = []
+        for cell_id in cell_ids:
+            cell = self.get_cell(cell_id)
+            new_cells.append(cell)
+        self.cells = new_cells
 
     @classmethod
     def from_filepath(cls, filepath: Path) -> "Notebook":

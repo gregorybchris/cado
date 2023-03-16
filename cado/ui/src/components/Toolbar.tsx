@@ -26,12 +26,7 @@ export default function Toolbar(props: ToolbarProps) {
     <div className="mb-5 flex items-center justify-between bg-dark-rock px-8">
       <div className="flex items-center py-3">
         <div className="mr-5 select-none font-sen text-xl font-bold">cado</div>
-        <div
-          className="mr-5 cursor-pointer rounded-md bg-rock py-2 px-4 duration-150 hover:bg-light-rock hover:ease-linear"
-          onClick={newCell}
-        >
-          <Plus weight="bold" />
-        </div>
+        <Button onClick={newCell} tooltip="New Cell" iconClass={Plus} />
       </div>
       <div className="flex items-center">
         <Button onClick={goToLibrary} tooltip="Library" iconClass={Books} />

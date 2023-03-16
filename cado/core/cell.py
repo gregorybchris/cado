@@ -20,46 +20,6 @@ class Cell(BaseModel):
     printed: Optional[str] = None
     status: CellStatus = CellStatus.EXPIRED
 
-    def set_status(self, status: CellStatus) -> None:
-        """Set the cell's status.
-
-        Args:
-            status (CellStatus): New cell status.
-        """
-        self.status = status
-
-    def set_language(self, language: Language) -> None:
-        """Set the cell's language.
-
-        Args:
-            language (Language): New cell language.
-        """
-        self.language = language
-
-    def set_code(self, code: str) -> None:
-        """Set the cell's code block.
-
-        Args:
-            code (str): Code the cell should contain.
-        """
-        self.code = code
-
-    def set_output_name(self, output_name: str) -> None:
-        """Set the output name of the cell.
-
-        Args:
-            output_name (str): The new output_name of the cell.
-        """
-        self.output_name = output_name
-
-    def set_input_names(self, input_names: List[str]) -> None:
-        """Set the input names of the cell.
-
-        Args:
-            input_names (List[str]): The new input_names of the cell.
-        """
-        self.input_names = input_names
-
     def run(self, context: Dict[str, Any]) -> None:
         """Run the cell.
 
@@ -86,15 +46,15 @@ class Cell(BaseModel):
             self.set_error()
             raise ValueError(f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
         self.output = exec_locals[self.output_name]
-        self.set_status(CellStatus.OK)
+        self.status = CellStatus.OK
 
     def clear(self) -> None:
         """Clear the cell outputs and set the status to expired."""
         self.output = None
         self.printed = None
-        self.set_status(CellStatus.EXPIRED)
+        self.status = CellStatus.EXPIRED
 
     def set_error(self) -> None:
         """Clear the cell outputs and set the status to error."""
         self.output = None
-        self.set_status(CellStatus.ERROR)
+        self.status = CellStatus.ERROR

@@ -13,6 +13,7 @@ export enum MessageType {
   CLEAR_CELL = "clear-cell",
   NEW_CELL = "new-cell",
   DELETE_CELL = "delete-cell",
+  REORDER_CELLS = "reorder-cells",
 
   // subscribe
   GET_NOTEBOOK_RESPONSE = "get-notebook-response",
@@ -69,6 +70,11 @@ export interface NewCell {
 export interface DeleteCell {
   cell_id: string;
   type: MessageType.DELETE_CELL;
+}
+
+export interface ReorderCells {
+  cell_ids: string[];
+  type: MessageType.REORDER_CELLS;
 }
 
 export interface GetNotebookResponse {

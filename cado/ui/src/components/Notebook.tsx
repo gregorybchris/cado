@@ -1,5 +1,8 @@
 import Cell from "./Cell";
 import Notebook from "../lib/models/notebook";
+import { Reorder } from "framer-motion";
+import { MessageType, ReorderCells } from "../lib/models/message";
+import CellModel from "../lib/models/cell";
 
 interface NotebookProps {
   notebook: Notebook;
@@ -7,14 +10,22 @@ interface NotebookProps {
 }
 
 export default function Notebook(props: NotebookProps) {
+  function reorderCells(cells: CellModel[]) {
+    props.sendMessage<ReorderCells>({
+      cell_ids: cells.map((cell) => cell.id),
+      type: MessageType.REORDER_CELLS,
+    });
+  }
+
   return (
     <div className="bg-rock pb-5">
       {/* <div className="text-lg">{props.notebook.name}</div> */}
-      <div>
+
+      <Reorder.Group axis="y" onReorder={reorderCells} layoutScroll values={props.notebook.cells}>
         {props.notebook.cells.map((cell, i) => (
           <Cell key={i} sendMessage={props.sendMessage} cell={cell} />
         ))}
-      </div>
+      </Reorder.Group>
     </div>
   );
 }

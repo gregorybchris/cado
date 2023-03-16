@@ -20,6 +20,7 @@ class MessageType(Enum):
     CLEAR_CELL = "clear-cell"
     NEW_CELL = "new-cell"
     DELETE_CELL = "delete-cell"
+    REORDER_CELLS = "reorder-cells"
 
     # subscribe
     GET_NOTEBOOK_RESPONSE = "get-notebook-response"
@@ -97,6 +98,11 @@ class NewCell(Message):
 class DeleteCell(Message):
     cell_id: UUID
     type: MessageType = MessageType.DELETE_CELL
+
+
+class ReorderCells(Message):
+    cell_ids: List[UUID]
+    type: MessageType = MessageType.REORDER_CELLS
 
 
 # endregion: publish

@@ -16,6 +16,7 @@ from cado.app.message import (
     Message,
     MessageType,
     NewCell,
+    ReorderCells,
     RunCell,
     UpdateCellCode,
     UpdateCellInputNames,
@@ -100,6 +101,10 @@ def _get_response(message_type: MessageType, message_json: Any, notebook: Notebo
     elif message_type == MessageType.UPDATE_CELL_LANGUAGE:
         update_cell_language = UpdateCellLanguage.parse_obj(message_json)
         notebook.update_cell_language(update_cell_language.cell_id, update_cell_language.language)
+        return GetNotebookResponse(notebook=notebook)
+    elif message_type == MessageType.REORDER_CELLS:
+        reorder_cells = ReorderCells.parse_obj(message_json)
+        notebook.reorder_cells(reorder_cells.cell_ids)
         return GetNotebookResponse(notebook=notebook)
     else:
         logger.error("Request type did not match any known message types")

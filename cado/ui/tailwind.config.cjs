@@ -5,10 +5,10 @@ module.exports = {
     extend: {
       colors: {
         dark: "#121214",
-        rock: "#292c33",
+        rock: "#2c3038",
         "black-rock": "#1d1f23",
         "dark-rock": "#22252a",
-        "light-rock": "#2c3039",
+        "light-rock": "#333742",
         "lighter-rock": "#464c5b",
       },
     },
