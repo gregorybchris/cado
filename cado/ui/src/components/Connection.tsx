@@ -23,7 +23,7 @@ export default function Connection() {
     shouldReconnect: (closeEvent) => {
       return didUnmount.current === false;
     },
-    reconnectAttempts: 30,
+    reconnectAttempts: 150,
     reconnectInterval: 2000,
   });
   const [notebook, setNotebook] = useState<Optional<NotebookModel>>(None);
