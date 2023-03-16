@@ -48,7 +48,9 @@ async def stream_api(socket: WebSocket) -> None:
     # pylint: disable=broad-exception-caught
     except Exception as exc:
         logger.error("Could not load notebook from file %s: %s", filepath, str(exc))
-        notebook = load_example_notebook()
+        example_name = "sum"
+        logger.error("Using example notebook %s.cado", example_name)
+        notebook = load_example_notebook(example_name)
 
     try:
         while True:
