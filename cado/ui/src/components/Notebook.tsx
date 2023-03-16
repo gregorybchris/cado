@@ -21,9 +21,9 @@ export default function Notebook(props: NotebookProps) {
     <div className="bg-rock pb-5">
       {/* <div className="text-lg">{props.notebook.name}</div> */}
 
-      <Reorder.Group axis="y" onReorder={reorderCells} layoutScroll values={props.notebook.cells}>
-        {props.notebook.cells.map((cell, i) => (
-          <Cell key={i} sendMessage={props.sendMessage} cell={cell} />
+      <Reorder.Group axis="y" onReorder={reorderCells} values={props.notebook.cells}>
+        {props.notebook.cells.map((cell) => (
+          <Cell key={cell.id} sendMessage={props.sendMessage} cell={cell} />
         ))}
       </Reorder.Group>
     </div>
