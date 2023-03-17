@@ -99,6 +99,7 @@ def process_message(
             return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         update_notebook_name = UpdateNotebookName.parse_obj(message_json)
         notebook.name = update_notebook_name.name
+        # TODO: Update filename
     elif message_type == MessageType.NEW_NOTEBOOK:
         NewNotebook.parse_obj(message_json)
         create_new_notebook(session_state)
