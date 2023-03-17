@@ -30,9 +30,6 @@ export default function Notebooks(props: NotebooksProps) {
       type: MessageType.DELETE_NOTEBOOK,
     });
   }
-  sorter(props.notebookDetails, (d) => d.updated).map((details) => {
-    console.log(details);
-  });
 
   return (
     <div className="bg-rock px-32 pb-5 pt-20">

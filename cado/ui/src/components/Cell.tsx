@@ -170,7 +170,7 @@ export default function Cell(props: CellProps) {
           <div className="flex items-center px-5">
             <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
 
-            {props.cell.output !== None && (
+            {props.cell.output !== None && props.cell.output !== null && (
               <div className="flex items-center">
                 <ArrowRight weight="bold" className="mx-2" />
                 <div className="select-text">{JSON.stringify(props.cell.output)}</div>

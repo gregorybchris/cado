@@ -31,16 +31,19 @@ async def stream_api(socket: WebSocket) -> None:
             message_json = await socket.receive_json()
             try:
                 message_type = MessageType.from_str(message_json["type"])
-                logger.info("Got message: %s", message_json)
-
+                logger.info("Received client message: %s", message_json)
                 response = process_message(message_type, message_json, session_state)
-                await socket.send_json(response.json())
+                response_json = response.json()
+                logger.info("Sending server message: %s", response_json)
+                await socket.send_json(response_json)
             # pylint: disable=broad-exception-caught
             except Exception as exc:
                 logger.error("Exception raised during cado session loop")
                 logger.error("Traceback: %s", traceback.format_exc())
                 response = ErrorResponse(error=str(exc))
-                await socket.send_json(response.json())
+                response_json = response.json()
+                logger.info("Sending server message: %s", response_json)
+                await socket.send_json(response_json)
     except WebSocketDisconnect:
         logger.info("Websocket disconnected")
         save_notebook(session_state)

@@ -34,8 +34,6 @@ def process_message(
     notebook = session_state.notebook
 
     if message_type == MessageType.GET_NOTEBOOK:
-        if notebook is None:
-            return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         GetNotebook.parse_obj(message_json)
     elif message_type == MessageType.UPDATE_CELL_CODE:
         if notebook is None:
@@ -83,14 +81,10 @@ def process_message(
         reorder_cells = ReorderCells.parse_obj(message_json)
         notebook.reorder_cells(reorder_cells.cell_ids)
     elif message_type == MessageType.LIST_NOTEBOOKS:
-        if notebook is None:
-            return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         ListNotebooks.parse_obj(message_json)
         details = list_local_notebooks()
         return ListNotebooksResponse(notebook_details=details)
     elif message_type == MessageType.OPEN_NOTEBOOK:
-        if notebook is None:
-            return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         open_notebook = OpenNotebook.parse_obj(message_json)
         session_state.notebook = Notebook.from_filepath(open_notebook.filepath)
         session_state.filepath = open_notebook.filepath
@@ -106,13 +100,9 @@ def process_message(
         update_notebook_name = UpdateNotebookName.parse_obj(message_json)
         notebook.name = update_notebook_name.name
     elif message_type == MessageType.NEW_NOTEBOOK:
-        if notebook is None:
-            return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         NewNotebook.parse_obj(message_json)
         create_new_notebook(session_state)
     elif message_type == MessageType.DELETE_NOTEBOOK:
-        if notebook is None:
-            return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         delete_notebook = DeleteNotebook.parse_obj(message_json)
         delete_existing_notebook(delete_notebook.filepath)
         details = list_local_notebooks()

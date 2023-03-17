@@ -42,7 +42,7 @@ export default function Connection() {
   }, []);
 
   function send<M>(message: M) {
-    console.log("Sending message: ", message);
+    console.log("Sending client message: ", message);
     sendMessage(JSON.stringify(message));
   }
 
@@ -65,14 +65,14 @@ export default function Connection() {
   }
 
   useEffect(() => {
-    loadNotebook();
+    listNotebooks();
   }, []);
 
   useEffect(() => {
     if (lastMessage !== null) {
       const messageJson = JSON.parse(JSON.parse(lastMessage.data));
       const message = messageJson as Message;
-      console.log("Got websocket message: ", message);
+      console.log("Received server message: ", message);
 
       if (message.type == MessageType.GET_NOTEBOOK_RESPONSE) {
         const response = message as GetNotebookResponse;
