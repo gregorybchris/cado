@@ -151,7 +151,7 @@ class Notebook(BaseModel):
 
         context: Dict[str, Any] = {}
         for parent in self._get_parents(cell):
-            if parent.status == CellStatus.EXPIRED or parent.status == CellStatus.ERROR:
+            if parent.status in [CellStatus.EXPIRED, CellStatus.ERROR]:
                 self.run_cell(parent.id)
             if parent.status == CellStatus.ERROR:
                 raise ValueError("Parent cell does not have OK status, could not run child cell")
