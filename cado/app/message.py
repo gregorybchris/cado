@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import List
-from uuid import UUID
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
+from uuid import UUID
 
 from pydantic import BaseModel
 

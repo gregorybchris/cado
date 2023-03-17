@@ -62,7 +62,10 @@ export default function Notebooks(props: NotebooksProps) {
           </div>
         ))}
       </div>
-      <div className="mt-6 flex cursor-pointer items-center text-gray-400 hover:text-gray-300" onClick={newNotebook}>
+      <div
+        className="mt-6 flex cursor-pointer items-center text-gray-400 duration-150 hover:text-gray-300 active:ease-linear"
+        onClick={newNotebook}
+      >
         <FilePlus className="mr-2" size={24} />
         <div>New notebook</div>
       </div>

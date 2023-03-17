@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle, Circle, Eraser, Play, Spinner, Trash, WarningCircle } from "@phosphor-icons/react";
+import { ArrowRight, Broom, CheckCircle, Circle, Play, Spinner, Trash, WarningCircle } from "@phosphor-icons/react";
 import {
   ClearCell,
   DeleteCell,
@@ -116,7 +116,7 @@ export default function Cell(props: CellProps) {
             {props.cell.language == Language.PYTHON && (
               <div className="flex items-center">
                 <Button onClick={runCell} tooltip="Run" iconClass={Play} />
-                <Button onClick={clearCell} tooltip="Clear" iconClass={Eraser} />
+                <Button onClick={clearCell} tooltip="Clear" iconClass={Broom} />
 
                 <div className="flex items-center">
                   {props.cell.status === CellStatus.ERROR && (
