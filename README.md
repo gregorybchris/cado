@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/cado-banner.png">
+  <img src="https://github.com/gregorybchris/cado/blob/main/assets/cado-banner.png?raw=True">
   <h1>cado</h1>
 
   <p>
