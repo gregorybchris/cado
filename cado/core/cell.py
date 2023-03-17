@@ -29,9 +29,6 @@ class Cell(BaseModel):
         if self.code == "":
             self.set_error()
             raise ValueError(f"Code is empty for cell \"{self.id}\"")
-        if self.output_name == "":
-            self.set_error()
-            raise ValueError(f"No output name set for cell \"{self.id}\"")
 
         exec_locals: Mapping[str, object] = {}
         try:
@@ -41,11 +38,12 @@ class Cell(BaseModel):
             self.set_error()
             raise ValueError(f"Failed to exec: {traceback.format_exc()}") from exc
 
-        # Check that a variable with the cell output name was emitted by exec
-        if self.output_name not in exec_locals:
-            self.set_error()
-            raise ValueError(f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
-        self.output = exec_locals[self.output_name]
+        if self.output_name != "":
+            # Check that a variable with the cell output name was emitted by exec
+            if self.output_name not in exec_locals:
+                self.set_error()
+                raise ValueError(f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
+            self.output = exec_locals[self.output_name]
         self.status = CellStatus.OK
 
     def clear(self) -> None:

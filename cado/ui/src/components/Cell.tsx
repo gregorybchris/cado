@@ -1,4 +1,4 @@
-import { ArrowRight, Broom, CheckCircle, Circle, Play, Spinner, Trash, WarningCircle } from "@phosphor-icons/react";
+import { ArrowRight, Broom, CheckCircle, Circle, Play, Trash, WarningCircle } from "@phosphor-icons/react";
 import {
   ClearCell,
   DeleteCell,
@@ -56,7 +56,7 @@ export default function Cell(props: CellProps) {
     const cellInputNamesString = props.cell.input_names.join(", ");
     if (inputNames == cellInputNamesString) return;
 
-    const inputNamesParsed = inputNames.replace(" ", "").split(",");
+    const inputNamesParsed = inputNames.length === 0 ? [] : inputNames.replace(" ", "").split(",");
     props.sendMessage<UpdateCellInputNames>({
       cell_id: props.cell.id,
       input_names: inputNamesParsed,
@@ -126,7 +126,6 @@ export default function Cell(props: CellProps) {
                     <CheckCircle className="text-green-500" weight="bold" size={18} />
                   )}
                   {props.cell.status === CellStatus.EXPIRED && <Circle weight="bold" size={18} />}
-                  {props.cell.status === CellStatus.RUNNING && <Spinner weight="bold" size={18} />}
                 </div>
               </div>
             )}

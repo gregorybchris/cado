@@ -31,7 +31,6 @@ class Notebook(BaseModel):
             cell_id (UUID): ID of the cell.
             output_name (str): Name for the output variable.
         """
-        # TODO: Check that the graph is acyclic
         self.clear_cell(cell_id)
 
         output_names = set()
@@ -45,7 +44,7 @@ class Notebook(BaseModel):
             child.clear()
 
         if output_name in output_names:
-            cell.set_error()
+            self.error_cell(cell.id)
             cell.output_name = ""
             raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
 
@@ -58,7 +57,7 @@ class Notebook(BaseModel):
             cell_id (UUID): ID of the cell.
             input_names (List[str]): Names for the input variables.
         """
-        # TODO: Check that the graph is acyclic
+        self._check_no_self_ancestor(cell_id, cell_id, input_names)
         self.clear_cell(cell_id)
 
         output_names = set()
@@ -69,9 +68,10 @@ class Notebook(BaseModel):
         cell = self.get_cell(cell_id)
         for input_name in input_names:
             if input_name not in output_names:
-                cell.set_error()
+                self.error_cell(cell.id)
                 cell.input_names = []
                 raise ValueError(f"No cell with output name \"{input_name}\"")
+
         cell.input_names = input_names
 
     def set_cell_code(self, cell_id: UUID, code: str) -> None:
@@ -126,6 +126,21 @@ class Notebook(BaseModel):
                 if other.output_name == input_name:
                     yield other
 
+    def _check_no_self_ancestor(
+        self,
+        target_cell_id: UUID,
+        current_cell_id: UUID,
+        input_names: List[str],
+    ) -> None:
+        for cell in self.cells:
+            if cell.id != current_cell_id:
+                for input_name in input_names:
+                    if input_name == cell.output_name:
+                        if cell.id == target_cell_id:
+                            self.error_cell(target_cell_id)
+                            raise ValueError("Cycle found in cell dependencies")
+                        self._check_no_self_ancestor(target_cell_id, cell.id, cell.input_names)
+
     def run_cell(self, cell_id: UUID) -> None:
         """Run a cell in the notebook.
 
@@ -136,8 +151,10 @@ class Notebook(BaseModel):
 
         context: Dict[str, Any] = {}
         for parent in self._get_parents(cell):
-            if parent.status == CellStatus.EXPIRED:
+            if parent.status == CellStatus.EXPIRED or parent.status == CellStatus.ERROR:
                 self.run_cell(parent.id)
+            if parent.status == CellStatus.ERROR:
+                raise ValueError("Parent cell does not have OK status, could not run child cell")
             context[parent.output_name] = parent.output
 
         logger.info("Running cell %s", cell.id)
@@ -157,6 +174,18 @@ class Notebook(BaseModel):
         cell = self.get_cell(cell_id)
         cell.language = language
         cell.clear()
+
+    def error_cell(self, cell_id: UUID) -> None:
+        """Error out a cell in the notebook.
+
+        Args:
+            cell_id (UUID): ID of the cell to error.
+        """
+        cell = self.get_cell(cell_id)
+        cell.set_error()
+
+        for child in self._get_children(cell):
+            self.clear_cell(child.id)
 
     def clear_cell(self, cell_id: UUID) -> None:
         """Clear a cell in the notebook.
