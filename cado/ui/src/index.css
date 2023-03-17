@@ -9,3 +9,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+::selection {
+  background: rgba(145, 145, 145, 0.4);
+}

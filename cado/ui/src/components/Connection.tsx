@@ -1,8 +1,11 @@
 import {
   ErrorResponse,
+  ExitNotebook,
   GetCellResponse,
   GetNotebook,
   GetNotebookResponse,
+  ListNotebooks,
+  ListNotebooksResponse,
   Message,
   MessageType,
 } from "../lib/models/message";
@@ -14,6 +17,8 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import CadoImage from "../images/cado.png";
 import Disconnect from "./Disconnect";
 import Notebook from "./Notebook";
+import NotebookDetails from "../lib/models/notebookDetails";
+import Notebooks from "./Notebooks";
 import Toolbar from "./Toolbar";
 import useImagePreloader from "../hooks/image";
 
@@ -26,7 +31,8 @@ export default function Connection() {
     reconnectAttempts: 150,
     reconnectInterval: 2000,
   });
-  const [notebook, setNotebook] = useState<Optional<NotebookModel>>(None);
+  const [currentNotebook, setCurrentNotebook] = useState<Optional<NotebookModel>>(None);
+  const [notebookDetails, setNotebookDetails] = useState<NotebookDetails[]>([]);
   useImagePreloader([CadoImage]);
 
   useEffect(() => {
@@ -46,6 +52,18 @@ export default function Connection() {
     });
   }
 
+  function listNotebooks() {
+    send<ListNotebooks>({
+      type: MessageType.LIST_NOTEBOOKS,
+    });
+  }
+
+  function goToNotebooks() {
+    send<ExitNotebook>({
+      type: MessageType.EXIT_NOTEBOOK,
+    });
+  }
+
   useEffect(() => {
     loadNotebook();
   }, []);
@@ -58,14 +76,20 @@ export default function Connection() {
 
       if (message.type == MessageType.GET_NOTEBOOK_RESPONSE) {
         const response = message as GetNotebookResponse;
-        setNotebook(response.notebook);
+        if (!response.notebook) {
+          listNotebooks();
+        }
+        setCurrentNotebook(response.notebook);
+      } else if (message.type == MessageType.LIST_NOTEBOOKS_RESPONSE) {
+        const response = message as ListNotebooksResponse;
+        setNotebookDetails(response.notebook_details);
       } else if (message.type == MessageType.GET_CELL_RESPONSE) {
         const response = message as GetCellResponse;
-        if (!notebook) {
+        if (!currentNotebook) {
           console.error("No notebook found");
           return;
         }
-        setNotebook(updateNotebookCell(notebook, response.cell));
+        setCurrentNotebook(updateNotebookCell(currentNotebook, response.cell));
       } else if (message.type == MessageType.ERROR_RESPONSE) {
         const response = message as ErrorResponse;
         console.error(response);
@@ -78,8 +102,11 @@ export default function Connection() {
 
   return (
     <div>
-      <Toolbar sendMessage={send} />
-      {readyState === ReadyState.OPEN && notebook && <Notebook notebook={notebook} sendMessage={send} />}
+      <Toolbar sendMessage={send} goToNotebooks={goToNotebooks} notebook={currentNotebook} />
+      {readyState === ReadyState.OPEN && currentNotebook && <Notebook notebook={currentNotebook} sendMessage={send} />}
+      {readyState === ReadyState.OPEN && !currentNotebook && (
+        <Notebooks notebookDetails={notebookDetails} sendMessage={send} />
+      )}
       {readyState !== ReadyState.OPEN && <Disconnect image={CadoImage} />}
     </div>
   );

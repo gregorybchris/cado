@@ -1,12 +1,15 @@
 from enum import Enum
 from typing import List
 from uuid import UUID
+from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel
 
 from cado.core.cell import Cell
 from cado.core.language import Language
 from cado.core.notebook import Notebook
+from cado.core.notebook_details import NotebookDetails
 
 
 class MessageType(Enum):
@@ -21,11 +24,18 @@ class MessageType(Enum):
     NEW_CELL = "new-cell"
     DELETE_CELL = "delete-cell"
     REORDER_CELLS = "reorder-cells"
+    LIST_NOTEBOOKS = "list-notebooks"
+    NEW_NOTEBOOK = "new-notebook"
+    DELETE_NOTEBOOK = "delete-notebook"
+    OPEN_NOTEBOOK = "open-notebook"
+    EXIT_NOTEBOOK = "exit-notebook"
+    UPDATE_NOTEBOOK_NAME = "update-notebook-name"
 
     # subscribe
     GET_NOTEBOOK_RESPONSE = "get-notebook-response"
     GET_CELL_RESPONSE = "get-cell-response"
     ERROR_RESPONSE = "error-response"
+    LIST_NOTEBOOKS_RESPONSE = "list-notebooks-response"
 
     @classmethod
     def from_str(cls, message_name: str) -> 'MessageType':
@@ -105,13 +115,40 @@ class ReorderCells(Message):
     type: MessageType = MessageType.REORDER_CELLS
 
 
+class ListNotebooks(Message):
+    type: MessageType = MessageType.LIST_NOTEBOOKS
+
+
+class NewNotebook(Message):
+    type: MessageType = MessageType.NEW_NOTEBOOK
+
+
+class DeleteNotebook(Message):
+    filepath: Path
+    type: MessageType = MessageType.DELETE_NOTEBOOK
+
+
+class OpenNotebook(Message):
+    filepath: Path
+    type: MessageType = MessageType.OPEN_NOTEBOOK
+
+
+class ExitNotebook(Message):
+    type: MessageType = MessageType.EXIT_NOTEBOOK
+
+
+class UpdateNotebookName(Message):
+    name: str
+    type: MessageType = MessageType.UPDATE_NOTEBOOK_NAME
+
+
 # endregion: publish
 
 # region: subscribe
 
 
 class GetNotebookResponse(Message):
-    notebook: Notebook
+    notebook: Optional[Notebook]
     type: MessageType = MessageType.GET_NOTEBOOK_RESPONSE
 
 
@@ -123,6 +160,11 @@ class GetCellResponse(Message):
 class ErrorResponse(Message):
     error: str
     type: MessageType = MessageType.ERROR_RESPONSE
+
+
+class ListNotebooksResponse(Message):
+    notebook_details: List[NotebookDetails]
+    type: MessageType = MessageType.LIST_NOTEBOOKS_RESPONSE
 
 
 # endregion: subscribe

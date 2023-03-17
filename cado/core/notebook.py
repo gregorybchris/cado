@@ -1,10 +1,11 @@
 import json
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterator, List
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from cado.core.cell import Cell
 from cado.core.cell_status import CellStatus
@@ -16,8 +17,11 @@ CURRENT_VERSION = "0.1"
 
 
 class Notebook(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
     name: str
     version: str = CURRENT_VERSION
+    created: datetime = Field(default_factory=datetime.now)
+    updated: datetime = Field(default_factory=datetime.now)
     cells: List[Cell] = []
 
     def update_cell_output_name(self, cell_id: UUID, output_name: str) -> None:
@@ -27,6 +31,7 @@ class Notebook(BaseModel):
             cell_id (UUID): ID of the cell.
             output_name (str): Name for the output variable.
         """
+        # TODO: Check that the graph is acyclic
         self.clear_cell(cell_id)
 
         output_names = set()
@@ -53,6 +58,7 @@ class Notebook(BaseModel):
             cell_id (UUID): ID of the cell.
             input_names (List[str]): Names for the input variables.
         """
+        # TODO: Check that the graph is acyclic
         self.clear_cell(cell_id)
 
         output_names = set()
@@ -176,6 +182,10 @@ class Notebook(BaseModel):
             new_cells.append(cell)
         self.cells = new_cells
 
+    def set_updated_time(self) -> None:
+        """Set the updated time to now."""
+        self.updated = datetime.now()
+
     @classmethod
     def from_filepath(cls, filepath: Path) -> "Notebook":
         """Load a notebook from a .cado notebook file.
@@ -202,5 +212,3 @@ class Notebook(BaseModel):
         with filepath.open("w") as f:
             notebook_json = self.json()
             f.write(notebook_json)
-
-        # TODO: Check that the graph is acyclic

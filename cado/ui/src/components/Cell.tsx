@@ -18,6 +18,7 @@ import { CellStatus } from "../lib/models/cellStatus";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import { Language } from "../lib/models/language";
 import { BsMarkdown as MarkdownIcon } from "react-icons/bs";
+import { None } from "../lib/types";
 import { TbBrandPython as PythonIcon } from "react-icons/tb";
 import ReorderIcon from "../widgets/ReorderIcon";
 import TextBox from "../widgets/TextBox";
@@ -43,7 +44,7 @@ export default function Cell(props: CellProps) {
   }, [props.cell.input_names]);
 
   function updateCellOutputName() {
-    setOutputName(props.cell.output_name);
+    if (outputName == props.cell.output_name) return;
     props.sendMessage<UpdateCellOutputName>({
       cell_id: props.cell.id,
       output_name: outputName,
@@ -52,7 +53,9 @@ export default function Cell(props: CellProps) {
   }
 
   function updateCellInputNames() {
-    setInputNames(props.cell.input_names.join(", "));
+    const cellInputNamesString = props.cell.input_names.join(", ");
+    if (inputNames == cellInputNamesString) return;
+
     const inputNamesParsed = inputNames.replace(" ", "").split(",");
     props.sendMessage<UpdateCellInputNames>({
       cell_id: props.cell.id,
@@ -107,7 +110,7 @@ export default function Cell(props: CellProps) {
 
   return (
     <Reorder.Item value={props.cell} id={props.cell.id} style={{ y }} dragListener={false} dragControls={dragControls}>
-      <div className="mx-5 my-4 rounded-lg bg-dark-rock py-3">
+      <div className="mx-5 my-4 select-none rounded-lg bg-dark-rock py-3">
         <div className="flex items-center justify-between px-5">
           <div>
             {props.cell.language == Language.PYTHON && (
@@ -134,13 +137,14 @@ export default function Cell(props: CellProps) {
               <TextBox value={inputNames} placeholder="Inputs" onBlur={updateCellInputNames} onChange={setInputNames} />
             )}
 
-            <div
+            <button
               onClick={updateCellLanguage}
+              title="Toggle language"
               className="mx-5 cursor-pointer rounded-lg bg-rock px-2 py-2 duration-150 hover:bg-light-rock hover:ease-linear"
             >
               {props.cell.language == Language.MARKDOWN && <MarkdownIcon />}
               {props.cell.language == Language.PYTHON && <PythonIcon />}
-            </div>
+            </button>
 
             <Button onClick={deleteCell} tooltip="Delete" iconClass={Trash} />
 
@@ -166,12 +170,10 @@ export default function Cell(props: CellProps) {
           <div className="flex items-center px-5">
             <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
 
-            {props.cell.output && (
-              <div className="inline-block">
-                <div className="flex items-center">
-                  <ArrowRight weight="bold" className="mx-2" />
-                  <div>{JSON.stringify(props.cell.output)}</div>
-                </div>
+            {props.cell.output !== None && (
+              <div className="flex items-center">
+                <ArrowRight weight="bold" className="mx-2" />
+                <div className="select-text">{JSON.stringify(props.cell.output)}</div>
               </div>
             )}
           </div>
