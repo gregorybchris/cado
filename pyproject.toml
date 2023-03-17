@@ -16,7 +16,7 @@ license = "Apache Software License"
 name = "cado"
 readme = "README.md"
 repository = "https://github.com/gregorybchris/cado"
-version = "0.1.0rc4"
+version = "0.1.0"
 include = ["cado/ui/dist/**/*", "logging.yaml"]
 
 
