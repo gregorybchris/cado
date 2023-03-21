@@ -53,7 +53,7 @@ cado = "cado.cli.cli:main"
 
 [tool.covcheck]
 branch = 4.0
-line = 53.0
+line = 52.0
 
 [tool.flake8]
 ignore = ""

@@ -26,3 +26,4 @@ class TestRoutes:
                 "message": "test",
             })
             response_json = socket.receive_json()
+            print("Response: ", response_json)
