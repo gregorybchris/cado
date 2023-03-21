@@ -1,4 +1,6 @@
+import io
 import traceback
+from contextlib import redirect_stdout, redirect_stderr
 from typing import Any, Dict, List, Mapping, Optional
 from uuid import UUID, uuid4
 
@@ -17,7 +19,8 @@ class Cell(BaseModel):
     input_names: List[str] = []
     language: Language = Language.PYTHON
 
-    printed: Optional[str] = None
+    stdout: Optional[str] = None
+    stderr: Optional[str] = None
     status: CellStatus = CellStatus.EXPIRED
 
     def run(self, context: Dict[str, Any]) -> None:
@@ -27,32 +30,45 @@ class Cell(BaseModel):
             Any: The output of running the cell.
         """
         if self.code == "":
-            self.set_error()
-            raise ValueError(f"Code is empty for cell \"{self.id}\"")
+            error = ValueError(f"Code is empty for cell \"{self.id}\"")
+            self.set_error(error)
+            raise error
 
         exec_locals: Mapping[str, object] = {}
         try:
-            # pylint: disable=exec-used
-            exec(self.code, context, exec_locals)
+
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                # pylint: disable=exec-used
+                exec(self.code, context, exec_locals)
+
+            self.stdout = stdout.getvalue().rstrip()
+            self.stderr = stderr.getvalue().rstrip()
         except Exception as exc:
-            self.set_error()
-            raise ValueError(f"Failed to exec: {traceback.format_exc()}") from exc
+            error = ValueError(f"Failed to exec: {traceback.format_exc()}")
+            self.set_error(error)
+            raise error from exc
 
         if self.output_name != "":
             # Check that a variable with the cell output name was emitted by exec
             if self.output_name not in exec_locals:
-                self.set_error()
-                raise ValueError(f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
+                error = ValueError(
+                    f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
+                self.set_error(error)
+                raise error
             self.output = exec_locals[self.output_name]
         self.status = CellStatus.OK
 
     def clear(self) -> None:
         """Clear the cell outputs and set the status to expired."""
         self.output = None
-        self.printed = None
+        self.stdout = None
+        self.stderr = None
         self.status = CellStatus.EXPIRED
 
-    def set_error(self) -> None:
+    def set_error(self, error: ValueError) -> None:
         """Clear the cell outputs and set the status to error."""
         self.output = None
         self.status = CellStatus.ERROR
+        self.stderr = str(error).rstrip()

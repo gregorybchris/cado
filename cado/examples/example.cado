@@ -9,7 +9,8 @@
       "output": null,
       "input_names": [],
       "language": "markdown",
-      "printed": null,
+      "stdout": null,
+      "stderr": null,
       "status": "expired"
     },
     {
@@ -19,7 +20,8 @@
       "output": null,
       "input_names": [],
       "language": "python",
-      "printed": null,
+      "stdout": null,
+      "stderr": null,
       "status": "expired"
     },
     {
@@ -31,7 +33,8 @@
         "total"
       ],
       "language": "python",
-      "printed": null,
+      "stdout": null,
+      "stderr": null,
       "status": "expired"
     }
   ]

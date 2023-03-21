@@ -166,13 +166,31 @@ export default function Cell(props: CellProps) {
         </div>
 
         {props.cell.language == Language.PYTHON && (
-          <div className="flex items-center px-5">
-            <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
+          <div>
+            <div className="flex items-center px-5">
+              <TextBox value={outputName} placeholder="Output" onBlur={updateCellOutputName} onChange={setOutputName} />
 
-            {props.cell.output !== None && props.cell.output !== null && (
-              <div className="flex items-center">
-                <ArrowRight weight="bold" className="mx-2" />
-                <div className="select-text">{JSON.stringify(props.cell.output)}</div>
+              {props.cell.output !== None && props.cell.output !== null && (
+                <div className="flex items-center">
+                  <ArrowRight weight="bold" className="mx-2" />
+                  <div className="select-text">{JSON.stringify(props.cell.output)}</div>
+                </div>
+              )}
+            </div>
+            {(!!props.cell.stdout || !!props.cell.stderr) && (
+              <div className="mt-3 bg-black-rock px-5">
+                <CodeEditor
+                  value={!props.cell.stderr ? props.cell.stdout : props.cell.stderr}
+                  language="txt"
+                  contentEditable={false}
+                  padding={15}
+                  style={{
+                    fontSize: 12,
+                    backgroundColor: "#1d1f23",
+                    fontFamily: "Menlo",
+                    color: !!props.cell.stderr ? "#ef4444" : undefined,
+                  }}
+                />
               </div>
             )}
           </div>

@@ -8,7 +8,8 @@
       "output_name": "a",
       "output": 5,
       "input_names": [],
-      "printed": null,
+      "stdout": null,
+      "stderr": null,
       "status": "ok"
     },
     {
@@ -19,7 +20,8 @@
       "input_names": [
         "a"
       ],
-      "printed": null,
+      "stdout": null,
+      "stderr": null,
       "status": "ok"
     },
     {
@@ -31,7 +33,8 @@
         "a",
         "b"
       ],
-      "printed": null,
+      "stdout": null,
+      "stderr": null,
       "status": "ok"
     }
   ]

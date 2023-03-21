@@ -1,5 +1,5 @@
 import { DeleteNotebook, MessageType, NewNotebook, OpenNotebook } from "../lib/models/message";
-import { FilePlus, Notebook, X } from "@phosphor-icons/react";
+import { FilePlus, Notebook as NotebookIcon, X } from "@phosphor-icons/react";
 
 import NotebookDetails from "../lib/models/notebookDetails";
 import { formatDateDiff } from "../lib/format";
@@ -50,7 +50,7 @@ export default function Notebooks(props: NotebooksProps) {
               onClick={() => openNotebook(details.filepath)}
             >
               <div className="mb-3 flex items-center">
-                <Notebook className="mr-2" size={24} />
+                <NotebookIcon className="mr-2" size={24} />
                 <div>{details.name}</div>
               </div>
 

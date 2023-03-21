@@ -44,9 +44,10 @@ class Notebook(BaseModel):
             child.clear()
 
         if output_name in output_names:
-            self.error_cell(cell.id)
+            error = ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
+            self.error_cell(cell.id, error)
             cell.output_name = ""
-            raise ValueError(f"Cell with output name \"{output_name}\" already exists in the notebook")
+            raise error
 
         cell.output_name = output_name
 
@@ -68,9 +69,10 @@ class Notebook(BaseModel):
         cell = self.get_cell(cell_id)
         for input_name in input_names:
             if input_name not in output_names:
-                self.error_cell(cell.id)
+                error = ValueError(f"No cell with output name \"{input_name}\"")
+                self.error_cell(cell.id, error)
                 cell.input_names = []
-                raise ValueError(f"No cell with output name \"{input_name}\"")
+                raise error
 
         cell.input_names = input_names
 
@@ -137,8 +139,9 @@ class Notebook(BaseModel):
                 for input_name in input_names:
                     if input_name == cell.output_name:
                         if cell.id == target_cell_id:
-                            self.error_cell(target_cell_id)
-                            raise ValueError("Cycle found in cell dependencies")
+                            error = ValueError("Cycle found in cell dependencies")
+                            self.error_cell(target_cell_id, error)
+                            raise error
                         self._check_no_self_ancestor(target_cell_id, cell.id, cell.input_names)
 
     def run_cell(self, cell_id: UUID) -> None:
@@ -175,14 +178,14 @@ class Notebook(BaseModel):
         cell.language = language
         cell.clear()
 
-    def error_cell(self, cell_id: UUID) -> None:
+    def error_cell(self, cell_id: UUID, error: ValueError) -> None:
         """Error out a cell in the notebook.
 
         Args:
             cell_id (UUID): ID of the cell to error.
         """
         cell = self.get_cell(cell_id)
-        cell.set_error()
+        cell.set_error(error)
 
         for child in self._get_children(cell):
             self.clear_cell(child.id)

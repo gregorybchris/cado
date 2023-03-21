@@ -11,6 +11,7 @@ export default interface Cell {
   input_names: string[];
   language: Language;
 
-  printed: Optional<string>;
+  stdout: Optional<string>;
+  stderr: Optional<string>;
   status: CellStatus;
 }
