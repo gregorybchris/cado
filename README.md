@@ -30,6 +30,8 @@ pip install cado
 ```bash
 # Start up a cado server
 cado up
+
+# Open http://0.0.0.0:8000 in a browser
 ```
 
 ## Keyboard Shortcuts
