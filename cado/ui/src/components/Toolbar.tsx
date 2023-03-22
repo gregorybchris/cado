@@ -31,26 +31,24 @@ export default function Toolbar(props: ToolbarProps) {
   }
 
   return (
-    <div className="mb-5">
-      <div className="flex items-center justify-between bg-dark-rock px-8">
-        <div className="flex items-center py-3">
-          <div className="mr-9 cursor-pointer select-none font-sen text-xl font-bold" onClick={props.goToNotebooks}>
-            cado
-          </div>
-          {props.notebook && (
-            <SlyTextBox
-              value={props.notebook.name}
-              placeholder=""
-              onBlur={() => {}}
-              onChange={(n) => updateNotebookName(n)}
-            ></SlyTextBox>
-          )}
+    <div className="flex items-center justify-between bg-dark-rock px-8">
+      <div className="flex items-center py-3">
+        <div className="mr-9 cursor-pointer select-none font-sen text-xl font-bold" onClick={props.goToNotebooks}>
+          cado
         </div>
-        <div className="flex items-center">
-          {props.notebook && <Button onClick={newCell} tooltip="New cell" iconClass={Plus} />}
-          {props.notebook && <Button onClick={props.goToNotebooks} tooltip="Notebooks" iconClass={Books} />}
-          {false && <Button onClick={goToSettings} tooltip="Settings" iconClass={Gear} />}
-        </div>
+        {props.notebook && (
+          <SlyTextBox
+            value={props.notebook.name}
+            placeholder=""
+            onBlur={() => {}}
+            onChange={(n) => updateNotebookName(n)}
+          ></SlyTextBox>
+        )}
+      </div>
+      <div className="flex items-center">
+        {props.notebook && <Button onClick={newCell} tooltip="New cell" iconClass={Plus} />}
+        {props.notebook && <Button onClick={props.goToNotebooks} tooltip="Notebooks" iconClass={Books} />}
+        {false && <Button onClick={goToSettings} tooltip="Settings" iconClass={Gear} />}
       </div>
     </div>
   );

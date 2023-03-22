@@ -3,14 +3,13 @@ import {
   ClearCell,
   DeleteCell,
   MessageType,
-  RunCell,
   UpdateCellCode,
   UpdateCellInputNames,
   UpdateCellLanguage,
   UpdateCellOutputName,
 } from "../lib/models/message";
 import { Reorder, useDragControls, useMotionValue } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Button from "../widgets/Button";
 import CellModel from "../lib/models/cell";
@@ -26,14 +25,29 @@ import TextBox from "../widgets/TextBox";
 interface CellProps {
   cell: CellModel;
   sendMessage: <M>(message: M) => void;
+  active: boolean;
+  onSetActive: () => void;
+  runCell: (cell: CellModel) => void;
+  clearCell: (cell: CellModel) => void;
+  editMode: boolean;
+  onSetEditMode: (editMode: boolean) => void;
 }
 
 export default function Cell(props: CellProps) {
   const [outputName, setOutputName] = useState<string>("");
   const [inputNames, setInputNames] = useState<string>("");
+  const editorRef = useRef<HTMLTextAreaElement | null>(null);
 
   const y = useMotionValue(0);
   const dragControls = useDragControls();
+
+  useEffect(() => {
+    if (props.active && props.editMode) {
+      editorRef.current?.focus();
+    } else {
+      editorRef.current?.blur();
+    }
+  }, [props.editMode, props.active]);
 
   useEffect(() => {
     setOutputName(props.cell.output_name);
@@ -72,20 +86,6 @@ export default function Cell(props: CellProps) {
     });
   }
 
-  function runCell() {
-    props.sendMessage<RunCell>({
-      cell_id: props.cell.id,
-      type: MessageType.RUN_CELL,
-    });
-  }
-
-  function clearCell() {
-    props.sendMessage<ClearCell>({
-      cell_id: props.cell.id,
-      type: MessageType.CLEAR_CELL,
-    });
-  }
-
   function deleteCell() {
     props.sendMessage<DeleteCell>({
       cell_id: props.cell.id,
@@ -108,15 +108,28 @@ export default function Cell(props: CellProps) {
     return "py";
   }
 
+  function onClick(e: any) {
+    e.stopPropagation();
+    props.onSetActive();
+  }
+
+  function onClickEditor(e: any) {
+    e.stopPropagation();
+    props.onSetEditMode(true);
+    props.onSetActive();
+  }
+
+  const activeStyles = props.active ? "border-l-4 border-lighter-rock" : "";
+
   return (
     <Reorder.Item value={props.cell} id={props.cell.id} style={{ y }} dragListener={false} dragControls={dragControls}>
-      <div className="mx-5 my-4 select-none rounded-lg bg-dark-rock py-3">
+      <div className={`mx-5 mb-4 select-none rounded-lg bg-dark-rock py-3 ${activeStyles}`} onClick={onClick}>
         <div className="flex items-center justify-between px-5">
           <div>
             {props.cell.language == Language.PYTHON && (
               <div className="flex items-center">
-                <Button onClick={runCell} tooltip="Run" iconClass={Play} />
-                <Button onClick={clearCell} tooltip="Clear" iconClass={Broom} />
+                <Button onClick={() => props.runCell(props.cell)} tooltip="Run" iconClass={Play} />
+                <Button onClick={() => props.clearCell(props.cell)} tooltip="Clear" iconClass={Broom} />
 
                 <div className="flex items-center">
                   {props.cell.status === CellStatus.ERROR && (
@@ -153,10 +166,12 @@ export default function Cell(props: CellProps) {
 
         <div className="my-3 bg-black-rock px-5">
           <CodeEditor
+            ref={editorRef}
             value={props.cell.code}
             language={getLanguageCode()}
             onChange={(event) => updateCellCode(event.target.value)}
             padding={15}
+            onClick={onClickEditor}
             style={{
               fontSize: 12,
               backgroundColor: "#1d1f23",
