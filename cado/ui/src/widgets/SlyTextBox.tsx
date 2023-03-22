@@ -6,6 +6,12 @@ interface SlyTextBoxProps {
 }
 
 export default function SlyTextBox(props: SlyTextBoxProps) {
+  function onChange(event: any) {
+    event.stopPropagation();
+    event.preventDefault();
+    props.onChange(event.target.value);
+  }
+
   return (
     <input
       className="inline-block bg-transparent outline-none"
@@ -13,7 +19,7 @@ export default function SlyTextBox(props: SlyTextBoxProps) {
       value={props.value}
       placeholder={props.placeholder}
       onBlur={(event) => props.onBlur(event.target.value)}
-      onChange={(event) => props.onChange(event.target.value)}
+      onChange={onChange}
     ></input>
   );
 }

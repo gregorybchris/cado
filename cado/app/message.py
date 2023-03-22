@@ -101,6 +101,7 @@ class ClearCell(Message):
 
 
 class NewCell(Message):
+    index: Optional[int]
     type: MessageType = MessageType.NEW_CELL
 
 

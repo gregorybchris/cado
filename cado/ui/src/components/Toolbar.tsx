@@ -1,9 +1,9 @@
 import { Books, Gear, Plus } from "@phosphor-icons/react";
 import { MessageType, NewCell, UpdateNotebookName } from "../lib/models/message";
+import { None, Optional } from "../lib/types";
 
 import Button from "../widgets/Button";
 import Notebook from "../lib/models/notebook";
-import { Optional } from "../lib/types";
 import SlyTextBox from "../widgets/SlyTextBox";
 
 interface ToolbarProps {
@@ -15,6 +15,7 @@ interface ToolbarProps {
 export default function Toolbar(props: ToolbarProps) {
   function newCell() {
     props.sendMessage<NewCell>({
+      index: None,
       type: MessageType.NEW_CELL,
     });
   }

@@ -73,6 +73,7 @@ export interface ClearCell {
 }
 
 export interface NewCell {
+  index: Optional<number>;
   type: MessageType.NEW_CELL;
 }
 

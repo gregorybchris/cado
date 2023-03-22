@@ -58,8 +58,8 @@ def process_message(
     elif message_type == MessageType.NEW_CELL:
         if notebook is None:
             return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
-        NewCell.parse_obj(message_json)
-        notebook.add_cell()
+        new_cell = NewCell.parse_obj(message_json)
+        notebook.add_cell(new_cell.index)
     elif message_type == MessageType.DELETE_CELL:
         if notebook is None:
             return ErrorResponse(error=f"Can't process {message_type}, no active notebook")

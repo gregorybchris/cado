@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -106,14 +106,20 @@ class Notebook(BaseModel):
         """
         self.cells = [c for c in self.cells if c.id != cell_id]
 
-    def add_cell(self) -> UUID:
+    def add_cell(self, index: Optional[int]) -> UUID:
         """Add a cell to the notebook.
+
+        Args:
+            index (Optional[int]): Index where the cell should be inserted.
 
         Returns:
             UUID: ID of the new cell.
         """
         new_cell = Cell(output_name="")
-        self.cells.append(new_cell)
+        if index is None:
+            self.cells.append(new_cell)
+        else:
+            self.cells.insert(index, new_cell)
         return new_cell.id
 
     def _get_children(self, cell: Cell) -> Iterator[Cell]:
