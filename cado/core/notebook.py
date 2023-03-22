@@ -106,7 +106,7 @@ class Notebook(BaseModel):
         """
         self.cells = [c for c in self.cells if c.id != cell_id]
 
-    def add_cell(self, index: Optional[int]) -> UUID:
+    def add_cell(self, index: Optional[int] = None) -> UUID:
         """Add a cell to the notebook.
 
         Args:
