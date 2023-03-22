@@ -31,3 +31,15 @@ pip install cado
 # Start up a cado server
 cado up
 ```
+
+## Keyboard Shortcuts
+
+| Action             | Command        |
+| ------------------ | -------------- |
+| Move between cells | `Arrows`       |
+| Run cell           | `Shift+Enter`  |
+| Clear cell         | `Shift+Delete` |
+| Turn on edit mode  | `Enter`        |
+| Turn off edit mode | `Escape`       |
+| Delete cell        | `d`            |
+| New cell           | `n`            |
