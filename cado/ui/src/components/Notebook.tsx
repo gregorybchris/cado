@@ -16,81 +16,81 @@ export default function Notebook(props: NotebookProps) {
   const [activeCell, setActiveCell] = useState<Optional<CellModel>>(None);
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  // useKeyCombos(
-  //   [
-  //     {
-  //       pattern: "Shift+Enter",
-  //       callback: () => {
-  //         if (!activeCell || editMode) return false;
-  //         runCell(activeCell);
-  //       },
-  //     },
-  //     {
-  //       pattern: "Enter",
-  //       callback: () => {
-  //         if (!activeCell || editMode) return false;
-  //         setEditMode(true);
-  //       },
-  //     },
-  //     {
-  //       pattern: "Escape",
-  //       callback: () => {
-  //         if (!editMode) return false;
-  //         setEditMode(false);
-  //       },
-  //     },
-  //     {
-  //       pattern: "ArrowUp",
-  //       callback: () => {
-  //         if (editMode) return false;
-  //         offsetActiveCell(-1);
-  //       },
-  //     },
-  //     {
-  //       pattern: "ArrowDown",
-  //       callback: () => {
-  //         if (editMode) return false;
-  //         offsetActiveCell(1);
-  //       },
-  //     },
-  //     {
-  //       pattern: "Shift+Backspace",
-  //       callback: () => {
-  //         if (!activeCell || editMode) return false;
-  //         clearCell(activeCell);
-  //       },
-  //     },
-  //     {
-  //       pattern: "n",
-  //       callback: () => {
-  //         if (editMode) return false;
-  //         newCell();
-  //       },
-  //     },
-  //     {
-  //       pattern: "d",
-  //       callback: () => {
-  //         if (!activeCell || editMode) return false;
-  //         deleteCell(activeCell);
-  //       },
-  //     },
-  //     {
-  //       pattern: "a",
-  //       callback: () => {
-  //         if (!activeCell || editMode) return false;
-  //         insertCell(false);
-  //       },
-  //     },
-  //     {
-  //       pattern: "b",
-  //       callback: () => {
-  //         if (!activeCell || editMode) return false;
-  //         insertCell(true);
-  //       },
-  //     },
-  //   ],
-  //   [activeCell, props.notebook]
-  // );
+  useKeyCombos(
+    [
+      {
+        pattern: "Shift+Enter",
+        callback: () => {
+          if (!activeCell || editMode) return false;
+          runCell(activeCell);
+        },
+      },
+      {
+        pattern: "Enter",
+        callback: () => {
+          if (!activeCell || editMode) return false;
+          setEditMode(true);
+        },
+      },
+      {
+        pattern: "Escape",
+        callback: () => {
+          if (!editMode) return false;
+          setEditMode(false);
+        },
+      },
+      {
+        pattern: "ArrowUp",
+        callback: () => {
+          if (editMode) return false;
+          offsetActiveCell(-1);
+        },
+      },
+      {
+        pattern: "ArrowDown",
+        callback: () => {
+          if (editMode) return false;
+          offsetActiveCell(1);
+        },
+      },
+      {
+        pattern: "Shift+Backspace",
+        callback: () => {
+          if (!activeCell || editMode) return false;
+          clearCell(activeCell);
+        },
+      },
+      {
+        pattern: "Control+n",
+        callback: () => {
+          if (editMode) return false;
+          newCell();
+        },
+      },
+      {
+        pattern: "Control+d",
+        callback: () => {
+          if (!activeCell || editMode) return false;
+          deleteCell(activeCell);
+        },
+      },
+      {
+        pattern: "Control+a",
+        callback: () => {
+          if (!activeCell || editMode) return false;
+          insertCell(false);
+        },
+      },
+      {
+        pattern: "Control+b",
+        callback: () => {
+          if (!activeCell || editMode) return false;
+          insertCell(true);
+        },
+      },
+    ],
+    [activeCell, props.notebook]
+  );
 
   useEffect(() => {
     if (props.notebook.cells.length > 0) {

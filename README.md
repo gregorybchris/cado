@@ -17,7 +17,7 @@
 
 ## About
 
-`cado` is a notebook IDE for Python, like [Jupyter](https://jupyter.org/), but with a reactive cell model, taking inspiration from [Observable](https://observablehq.com/). Each cell defines its own outputs that other cells can listen to. When the output of a parent cell updates, the change propagates to all child cells. When a child runs, it uses cached outputs from parent cells, reducing the amount of computation per cell.
+`cado` is a notebook IDE for Python, like [Jupyter](https://jupyter.org/), but with a reactive cell model, taking inspiration from [Observable](https://observablehq.com/). Each cell defines its own outputs that other cells can listen to. When a child cell runs, it uses cached outputs from parent cells. And when the output of a parent cell updates, the change propagates to all child cells automatically.
 
 ## Installation
 
@@ -33,3 +33,25 @@ cado up
 
 # Open http://0.0.0.0:8000 in a browser
 ```
+
+You should now see a screen that lists out all of your notebooks. Click on the example notebook to get started.
+
+<p align="center">
+  <img style="inline-block; margin-right: 10px;" src="assets/notebooks-screen.png" height=400>
+  <img style="inline-block" src="assets/notebook-screen.png" height=400>
+</p>
+
+## Keyboard Shortcuts
+
+| Action                                       | Command        |
+| -------------------------------------------- | -------------- |
+| Make the cell above the active cell          | `UpArrow`      |
+| Make the cell below the active cell          | `DownArrow`    |
+| Run the active cell                          | `Shift+Enter`  |
+| Clear the active cell                        | `Shift+Delete` |
+| Turn on edit mode                            | `Enter`        |
+| Turn off edit mode                           | `Escape`       |
+| Create a new cell before the active cell     | `Control+a`    |
+| Create a new cell after the active cell      | `Control+b`    |
+| Create a new cell at the end of the notebook | `Control+n`    |
+| Delete the active cell                       | `Control+d`    |
