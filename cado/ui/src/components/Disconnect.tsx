@@ -10,7 +10,7 @@ export default function Disconnect(props: DisconnectProps) {
       </div>
       <div className="mt-12 text-center">
         <div className="text-5xl">Ope!</div>
-        <div className="mt-5 text-xl">We lost connection to the cado sever. Please check that it's still running!</div>
+        <div className="mt-5 text-xl">We lost connection to the cado server. Please check that it's still running!</div>
       </div>
     </div>
   );
