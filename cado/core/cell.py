@@ -62,6 +62,14 @@ class Cell(BaseModel):
         self.status = CellStatus.OK
 
     def parse_output(self, output: Any) -> Any:
+        """Parse the cells output as JSON.
+
+        Args:
+            output (Any): The cell output.
+
+        Returns:
+            Any: The cell output if it could be JSON serialized.
+        """
         try:
             json.dumps(output)
         except TypeError as exc:

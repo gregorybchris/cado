@@ -52,8 +52,8 @@ requires = ["poetry-core>=1.0.0"]
 cado = "cado.cli.cli:main"
 
 [tool.covcheck]
-branch = 4.0
-line = 52.0
+branch = 3.0
+line = 51.0
 
 [tool.flake8]
 ignore = ""

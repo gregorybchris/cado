@@ -6,6 +6,11 @@ logger = logging.getLogger(__name__)
 
 
 def write_ui_config(port: int) -> None:
+    """Write a config that the UI can read.
+
+    Args:
+        port (int): Port number.
+    """
     static_dirpath = Path(__file__).resolve().parent.parent / "ui" / "dist"
     config_filepath = static_dirpath / "config.json"
     with config_filepath.open("w") as f:

@@ -50,6 +50,15 @@ def create_notebook(session_state: SessionState) -> None:
 
 
 def get_unique_notebook_name(name: str, dirpath: Path) -> str:
+    """Attempts to find a unique notebook name and avoids duplicates.
+
+    Args:
+        name (str): The desired name for the notebook.
+        dirpath (Path): The directory where the notebook will be saved.
+
+    Returns:
+        str: The unique name the notebook should be saved as.
+    """
     for i in range(1, 100):
         name = name if i == 1 else f"{name}-{i}"
         filename = f"{name}.cado"
@@ -69,6 +78,13 @@ def delete_existing_notebook(filepath: Path) -> None:
 
 
 def rename_notebook(session_state: SessionState, notebook: Notebook, name: str) -> None:
+    """Rename the notebook given a new name.
+
+    Args:
+        session_state (SessionState): Current session state.
+        notebook (Notebook): Notebook to update.
+        name (str): Name to use when renaming the notebook.
+    """
     notebook.name = name
 
     if name == "":
