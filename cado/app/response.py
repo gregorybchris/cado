@@ -1,6 +1,7 @@
 import logging
 from typing import Any
-from cado.app.disk import create_new_notebook, delete_existing_notebook, list_local_notebooks, save_notebook
+from cado.app.disk import (create_notebook, delete_existing_notebook, list_local_notebooks, rename_notebook,
+                           save_notebook)
 
 from cado.app.message import (ClearCell, DeleteCell, DeleteNotebook, ErrorResponse, ExitNotebook, GetNotebook,
                               GetNotebookResponse, ListNotebooks, ListNotebooksResponse, Message, MessageType, NewCell,
@@ -98,11 +99,10 @@ def process_message(
         if notebook is None:
             return ErrorResponse(error=f"Can't process {message_type}, no active notebook")
         update_notebook_name = UpdateNotebookName.parse_obj(message_json)
-        notebook.name = update_notebook_name.name
-        # TODO: Update filename
+        rename_notebook(session_state, notebook, update_notebook_name.name)
     elif message_type == MessageType.NEW_NOTEBOOK:
         NewNotebook.parse_obj(message_json)
-        create_new_notebook(session_state)
+        create_notebook(session_state)
     elif message_type == MessageType.DELETE_NOTEBOOK:
         delete_notebook = DeleteNotebook.parse_obj(message_json)
         delete_existing_notebook(delete_notebook.filepath)

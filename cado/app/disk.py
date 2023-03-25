@@ -31,7 +31,7 @@ def save_notebook(session_state: SessionState) -> None:
     notebook.to_filepath(filepath)
 
 
-def create_new_notebook(session_state: SessionState) -> None:
+def create_notebook(session_state: SessionState) -> None:
     """Create a new notebook and set it as the current session notebook.
     Also save the new empty notebook to disk.
 
@@ -39,17 +39,23 @@ def create_new_notebook(session_state: SessionState) -> None:
         session_state (SessionState): Current session state.
     """
     cwd = Path.cwd()
+    name = get_unique_notebook_name("notebook", cwd)
+    filename = f"{name}.cado"
+    filepath = cwd / filename
+    notebook = Notebook(name=name)
+    notebook.add_cell()
+    notebook.to_filepath(filepath)
+    session_state.filepath = filepath
+    session_state.notebook = notebook
+
+
+def get_unique_notebook_name(name: str, dirpath: Path) -> str:
     for i in range(1, 100):
-        name = "notebook" if i == 1 else f"notebook-{i}"
+        name = name if i == 1 else f"{name}-{i}"
         filename = f"{name}.cado"
-        filepath = cwd / filename
+        filepath = dirpath / filename
         if not filepath.exists():
-            notebook = Notebook(name=name)
-            notebook.add_cell()
-            notebook.to_filepath(filepath)
-            session_state.filepath = filepath
-            session_state.notebook = notebook
-            return
+            return name
     raise ValueError("Could not create a new notebook, found too many existing new notebooks")
 
 
@@ -60,6 +66,25 @@ def delete_existing_notebook(filepath: Path) -> None:
         filepath (Path): Path on disk to the notebook.
     """
     filepath.unlink()
+
+
+def rename_notebook(session_state: SessionState, notebook: Notebook, name: str) -> None:
+    notebook.name = name
+
+    if name == "":
+        return
+
+    old_filepath = session_state.filepath
+    if old_filepath is None:
+        return
+
+    dirpath = old_filepath.parent
+    new_name = get_unique_notebook_name(name, dirpath)
+    new_filepath = dirpath / f"{new_name}.cado"
+
+    session_state.filepath = new_filepath
+    save_notebook(session_state)
+    delete_existing_notebook(old_filepath)
 
 
 def list_local_notebooks() -> List[NotebookDetails]:
