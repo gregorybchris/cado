@@ -25,6 +25,19 @@
 pip install cado
 ```
 
+## Usage
+
+```bash
+# Start up a cado server
+cado up
+
+# Open http://localhost:8000 in a browser
+```
+
+<p align="center">
+  <img src="assets/demo.gif" height=600>
+</p>
+
 ## Features
 
 If you have ideas for new features feel free to create an issue or submit a pull request!
@@ -35,22 +48,6 @@ If you have ideas for new features feel free to create an issue or submit a pull
 - [x] Drag cells to reorder
 - [x] Markdown mode
 - [x] Notebook files viewer
-
-## Usage
-
-```bash
-# Start up a cado server
-cado up
-
-# Open http://0.0.0.0:8000 in a browser
-```
-
-You should now see a screen that lists out all of your notebooks. Click on the example notebook to get started.
-
-<p align="center">
-  <img style="inline-block; margin-right: 10px;" src="assets/notebooks-screen.png" height=400>
-  <img style="inline-block" src="assets/notebook-screen.png" height=400>
-</p>
 
 ## Keyboard Shortcuts
 
