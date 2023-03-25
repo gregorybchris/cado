@@ -68,6 +68,12 @@ class Notebook(BaseModel):
 
         cell = self.get_cell(cell_id)
         for input_name in input_names:
+            if input_name == cell.output_name:
+                error = ValueError("A cell cannot have its own output as input")
+                self.error_cell(cell.id, error)
+                cell.input_names = []
+                raise error
+
             if input_name not in output_names:
                 error = ValueError(f"No cell with output name \"{input_name}\"")
                 self.error_cell(cell.id, error)
