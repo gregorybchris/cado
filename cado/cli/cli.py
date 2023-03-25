@@ -1,9 +1,9 @@
 import logging
-import pkg_resources
 import webbrowser
 from pathlib import Path
 
 import click
+import pkg_resources
 import uvicorn
 
 from cado.app.app import app as cado_app
@@ -16,6 +16,7 @@ def main() -> None:
     """Main CLI entrypoint."""
 
 
+# pylint: disable=redefined-builtin
 @main.command(name="up")
 @click.option("--host", type=str, default="localhost")
 @click.option("--port", "-p", type=int, default=8000)
@@ -48,7 +49,7 @@ def up_command(host: str, port: int, debug: bool, log_level: int, open: bool) ->
     if open:
         webbrowser.open(url)
 
-    logger.info(f"Starting app from {current_dirpath}")
+    logger.info("Starting app from %s", current_dirpath)
 
     package_dirpath = current_dirpath.parent.parent
     log_config_filepath = package_dirpath / "logging.yaml"
