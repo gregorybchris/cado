@@ -166,7 +166,7 @@ class Notebook(BaseModel):
                 raise ValueError("Parent cell does not have OK status, could not run child cell")
             context[parent.output_name] = parent.output
 
-        logger.info("Running cell %s", cell.id)
+        logger.debug("Running cell %s", cell.id)
         cell.run(context)
 
         if cell.status == CellStatus.OK:

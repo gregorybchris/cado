@@ -18,16 +18,16 @@ def save_notebook(session_state: SessionState) -> None:
     """
     notebook = session_state.notebook
     if notebook is None:
-        logger.info("Not saving notebook to file, notebook was None")
+        logger.debug("Not saving notebook to file, notebook was None")
         return
 
     filepath = session_state.filepath
     if filepath is None:
-        logger.info("Not saving notebook to file, filepath was None")
+        logger.debug("Not saving notebook to file, filepath was None")
         return
 
     notebook.set_updated_time()
-    logger.info("Saving notebook to file: %s", filepath)
+    logger.debug("Saving notebook to file: %s", filepath)
     notebook.to_filepath(filepath)
 
 

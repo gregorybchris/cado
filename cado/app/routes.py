@@ -31,10 +31,10 @@ async def stream_api(socket: WebSocket) -> None:
             message_json = await socket.receive_json()
             try:
                 message_type = MessageType.from_str(message_json["type"])
-                logger.info("Received client message: %s", message_json)
+                logger.debug("Received client message: %s", message_json)
                 response = process_message(message_type, message_json, session_state)
                 response_json = response.json()
-                logger.info("Sending server message: %s", response_json)
+                logger.debug("Sending server message: %s", response_json)
                 await socket.send_json(response_json)
             # pylint: disable=broad-exception-caught
             except Exception as exc:
@@ -42,7 +42,7 @@ async def stream_api(socket: WebSocket) -> None:
                 logger.error("Traceback: %s", traceback.format_exc())
                 response = ErrorResponse(error=str(exc))
                 response_json = response.json()
-                logger.info("Sending server message: %s", response_json)
+                logger.debug("Sending server message: %s", response_json)
                 await socket.send_json(response_json)
     except WebSocketDisconnect:
         logger.info("Websocket disconnected")
