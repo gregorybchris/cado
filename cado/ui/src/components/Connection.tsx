@@ -29,7 +29,7 @@ interface ConnectionProps {
 
 export default function Connection(props: ConnectionProps) {
   const didUnmount = useRef(false);
-  const socketUrl = `ws://localhost:${props.appConfig.port}/stream`;
+  const socketUrl = `ws://${props.appConfig.host}/stream`;
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     shouldReconnect: (closeEvent) => {
       return didUnmount.current === false;
