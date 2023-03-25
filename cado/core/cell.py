@@ -1,4 +1,5 @@
 import io
+import json
 import traceback
 from contextlib import redirect_stdout, redirect_stderr
 from typing import Any, Dict, List, Mapping, Optional
@@ -57,8 +58,17 @@ class Cell(BaseModel):
                     f"Cell name \"{self.output_name}\" was not found in exec locals for cell ({self.id})")
                 self.set_error(error)
                 raise error
-            self.output = exec_locals[self.output_name]
+            self.output = self.parse_output(exec_locals[self.output_name])
         self.status = CellStatus.OK
+
+    def parse_output(self, output: Any) -> Any:
+        try:
+            json.dumps(output)
+        except TypeError as exc:
+            error = ValueError(f"Cell outputs must be JSON serializable. {exc}.")
+            self.set_error(error)
+            raise error from exc
+        return output
 
     def clear(self) -> None:
         """Clear the cell outputs and set the status to expired."""
