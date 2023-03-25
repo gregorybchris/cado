@@ -162,6 +162,11 @@ export default function Notebook(props: NotebookProps) {
     });
   }
 
+  function updateActiveCell(cell: CellModel, editMode: boolean) {
+    setEditMode(editMode);
+    setActiveCell(cell);
+  }
+
   return (
     <div className="bg-rock py-5" onClick={() => setActiveCell(None)}>
       <Reorder.Group axis="y" onReorder={reorderCells} values={props.notebook.cells}>
@@ -174,7 +179,7 @@ export default function Notebook(props: NotebookProps) {
             clearCell={clearCell}
             active={activeCell?.id == cell.id}
             editMode={editMode}
-            onSetActive={() => setActiveCell(cell)}
+            onSetActive={(editMode: boolean) => updateActiveCell(cell, editMode)}
             onSetEditMode={(editMode) => setEditMode(editMode)}
           />
         ))}

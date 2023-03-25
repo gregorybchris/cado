@@ -1,6 +1,5 @@
 import { ArrowRight, Broom, CheckCircle, Circle, Play, Trash, WarningCircle } from "@phosphor-icons/react";
 import {
-  ClearCell,
   DeleteCell,
   MessageType,
   UpdateCellCode,
@@ -26,7 +25,7 @@ interface CellProps {
   cell: CellModel;
   sendMessage: <M>(message: M) => void;
   active: boolean;
-  onSetActive: () => void;
+  onSetActive: (editMode: boolean) => void;
   runCell: (cell: CellModel) => void;
   clearCell: (cell: CellModel) => void;
   editMode: boolean;
@@ -110,13 +109,12 @@ export default function Cell(props: CellProps) {
 
   function onClick(e: any) {
     e.stopPropagation();
-    props.onSetActive();
+    props.onSetActive(false);
   }
 
   function onClickEditor(e: any) {
     e.stopPropagation();
-    props.onSetEditMode(true);
-    props.onSetActive();
+    props.onSetActive(true);
   }
 
   const activeStyles = props.active ? "border-l-4 border-lighter-rock" : "";
