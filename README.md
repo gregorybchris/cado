@@ -25,6 +25,17 @@
 pip install cado
 ```
 
+## Features
+
+If you have ideas for new features feel free to create an issue or submit a pull request!
+
+- [x] Reactive cells
+- [x] Auto-save to disk
+- [x] Keyboard shortcuts
+- [x] Drag cells to reorder
+- [x] Markdown mode
+- [x] Notebook files viewer
+
 ## Usage
 
 ```bash
@@ -55,14 +66,3 @@ You should now see a screen that lists out all of your notebooks. Click on the e
 | Create a new cell after the active cell      | `Control+b`    |
 | Create a new cell at the end of the notebook | `Control+n`    |
 | Delete the active cell                       | `Control+d`    |
-
-## Features
-
-If you have ideas for new features feel free to create an issue or submit a pull request!
-
-- [x] Reactive cells
-- [x] Auto-save to disk
-- [x] Keyboard shortcuts
-- [x] Drag cells to reorder
-- [x] Markdown mode
-- [x] Notebook files viewer

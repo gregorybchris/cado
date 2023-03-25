@@ -5,6 +5,7 @@ import click
 import uvicorn
 
 from cado.app.app import app as cado_app
+from cado.cli.config import write_ui_config
 
 
 @click.group()
@@ -23,6 +24,8 @@ def up_command(host: str, port: int, debug: bool, log_level: int) -> None:
     current_dirpath = Path(__file__).parent
     print(f"From {current_dirpath}")
     print("Starting app")
+
+    write_ui_config(port=port)
 
     package_dirpath = current_dirpath.parent.parent
     log_config_filepath = package_dirpath / "logging.yaml"

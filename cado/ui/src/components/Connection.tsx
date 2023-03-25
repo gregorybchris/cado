@@ -14,6 +14,7 @@ import NotebookModel, { updateNotebookCell } from "../lib/models/notebook";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
+import AppConfig from "../lib/appConfig";
 import CadoImage from "../images/cado.png";
 import Disconnect from "./Disconnect";
 import Notebook from "./Notebook";
@@ -22,14 +23,19 @@ import Notebooks from "./Notebooks";
 import Toolbar from "./Toolbar";
 import useImagePreloader from "../hooks/image";
 
-export default function Connection() {
+interface ConnectionProps {
+  appConfig: AppConfig;
+}
+
+export default function Connection(props: ConnectionProps) {
   const didUnmount = useRef(false);
-  const { sendMessage, lastMessage, readyState } = useWebSocket("ws://localhost:8000/stream", {
+  const socketUrl = `ws://localhost:${props.appConfig.port}/stream`;
+  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     shouldReconnect: (closeEvent) => {
       return didUnmount.current === false;
     },
-    reconnectAttempts: 150,
-    reconnectInterval: 2000,
+    reconnectAttempts: props.appConfig.reconnectAttempts,
+    reconnectInterval: props.appConfig.reconnectInterval,
   });
   const [currentNotebook, setCurrentNotebook] = useState<Optional<NotebookModel>>(None);
   const [notebookDetails, setNotebookDetails] = useState<NotebookDetails[]>([]);
