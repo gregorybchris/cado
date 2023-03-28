@@ -53,11 +53,11 @@ def up_command(host: str, port: int, debug: bool, log_level: int, open: bool) ->
 
     package_dirpath = current_dirpath.parent.parent
     log_config_filepath = package_dirpath / "logging.yaml"
+    log_level = logging.DEBUG if debug else log_level
     uvicorn.run(
         cado_app,
         host=host,
         port=port,
-        debug=debug,
         log_level=log_level,
         log_config=str(log_config_filepath),
     )
