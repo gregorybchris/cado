@@ -33,6 +33,7 @@ uvicorn = { version = "^0.21.1", extras = ["standard"] }
 [tool.poetry.group.dev.dependencies]
 covcheck = "^0.4.2"
 flake8 = "^6.0.0"
+httpx = "^0.23.3"
 ipdb = "^0.13.9"
 mypy = "^1.0.1"
 pylint = "^2.16.2"
